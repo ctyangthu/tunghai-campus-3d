@@ -24,4 +24,5 @@ export const places = [
   ['w226829984',2,'管理學院','College of Management','位於第二教學區，是校園接駁路線的重要站點。','https://bus.service.thu.edu.tw/',1,195],
   ['w367198554',2,'音樂系館','Department of Music','第二教學區的音樂教學空間，鄰近美術系館。',campusMap,0,150],
   ['w367198636',2,'美術系館','Department of Fine Arts','清水混凝土、紅磚牆與外露樓梯構成系館立面。朝向中庭的植生曲面沿著坡地展開，連接建築與草坪。','https://www.taichung.gov.tw/media/271345/5102811383171.pdf',0,108],
+  ['w226831045',2,'省政研究大樓','Provincial Government Building','又稱省政大樓（PG），位於第二教學區管理學院旁。紅磚翼棟以深色坡屋頂收邊，入口設有玻璃帷幕和雨棚。館內設有國際會議廳。','https://thupr.thu.edu.tw/newsdetail.php?c=60&id=53371',1,76],
 ].map(([id,zone,name,english,description,source,featured,width]) => ({id,zone,name,english,description,source,featured,width}));

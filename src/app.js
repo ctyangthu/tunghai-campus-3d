@@ -2,6 +2,7 @@ import * as T from 'three';
 import {places,zones} from './places.js';
 import {makeWorld} from './scene.js';
 import {fineArtsId} from './fine-arts.js';
+import {provincialBuildingId} from './provincial-building.js';
 
 const root=document.getElementById('tunghai-campus');
 const el=selector=>root.querySelector(selector);
@@ -170,7 +171,7 @@ function init({geo,terrain,chapel}) {
       }
     }
     const point=coordinates.get(selected.id);
-    ring.visible=focusActive&&Boolean(point)&&selected.id!==fineArtsId;
+    ring.visible=focusActive&&Boolean(point)&&selected.id!==fineArtsId&&selected.id!==provincialBuildingId;
     if(ring.visible){
       const radius=selected.id==='w227101621'?17:Math.min(44,Math.max(6,selected.width*.088));
       ring.position.set(point.x,height(point.x,point.z)+1.2,point.z);
@@ -223,6 +224,7 @@ function init({geo,terrain,chapel}) {
     const closeAngles={
       w227101621:{az:.72,el:.49},
       [fineArtsId]:{az:1.03,el:.43},
+      [provincialBuildingId]:{az:2.49,el:.48},
     };
     const angle=view==='top'?bird:(closeAngles[place.id]??{az:.54,el:.72});
     go({x:point.x,y:grade+(byId.has(place.id)?6:0),z:point.z,size:place.width*Math.max(1,.92*heightPx/widthPx),...angle},920);

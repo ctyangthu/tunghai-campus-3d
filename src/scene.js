@@ -1,5 +1,11 @@
 import * as T from 'three';
 import {fineArtsId, fineArtsBuilding} from './fine-arts.js';
+import {provincialBuildingId, provincialBuilding} from './provincial-building.js';
+
+const detailedBuildings = new Map([
+  [fineArtsId, fineArtsBuilding],
+  [provincialBuildingId, provincialBuilding],
+]);
 
 const decode = (value, ArrayType) => new ArrayType(Uint8Array.from(atob(value), c => c.charCodeAt(0)).buffer);
 const clamp = (v, min, max) => Math.min(max, Math.max(min, v));
@@ -86,6 +92,7 @@ export function makeWorld(scene, geo, terrain, chapel) {
   const buildings = new T.Group();
   const byId = new Map();
   const hits = [];
+  const plantingExclusions = [];
   const representatives = new Set(geo.pois.map(p => p.osm));
   const traditional = ['#738078','#66766e','#82867b','#707871'];
   const modern = ['#d1c4ac','#c5beb0','#e6d9ba','#ded6be','#bcb8a8'];
@@ -109,10 +116,12 @@ export function makeWorld(scene, geo, terrain, chapel) {
   }
   for (const f of geo.buildings) {
     if (f.osm === 'w227101621') continue;
-    if (f.osm === fineArtsId) {
-      const refined = fineArtsBuilding(f, height);
+    const makeDetailedBuilding = detailedBuildings.get(f.osm);
+    if (makeDetailedBuilding) {
+      const refined = makeDetailedBuilding(f, height);
       buildings.add(refined.group);
       hits.push(...refined.pickables);
+      if (refined.plantingExclusion) plantingExclusions.push(refined.plantingExclusion);
       byId.set(f.osm, refined.top + 2.5);
       continue;
     }
@@ -246,7 +255,7 @@ export function makeWorld(scene, geo, terrain, chapel) {
     byId.set(tower.osm,b.position.y+6);
   }
 
-  plantTrees(scene,geo,height,bounds);
+  plantTrees(scene,geo,height,bounds,plantingExclusions);
   return {height,board,byId,hits};
 }
 
@@ -354,7 +363,7 @@ function groundTexture(geo,bounds,height) {
   return texture;
 }
 
-function plantTrees(scene,geo,height,bounds) {
+function plantTrees(scene,geo,height,bounds,plantingExclusions) {
   const forest=geo.land.filter(f=>['wood','forest','scrub','orchard'].includes(f.type));
   const exclusion=geo.land.filter(f=>['water','swimming_pool','pitch','track'].includes(f.type));
   const boxes = records => records.map(f=>{
@@ -397,6 +406,7 @@ function plantTrees(scene,geo,height,bounds) {
       if (!woodland && (a>.22 || !inside(px,pz,geo.boundary) || check(px,pz,openLand))) continue;
       if (woodland && a>.78) continue;
       if (Math.hypot(px+421,pz-16)<59 || check(px,pz,built) || check(px,pz,water) || nearRoad(px,pz)) continue;
+      if (plantingExclusions.some(polygon=>inside(px,pz,polygon))) continue;
       candidates.push([px,pz,woodland?1:.84]);
     }
   }
