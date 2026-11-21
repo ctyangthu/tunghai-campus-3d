@@ -1,0 +1,74 @@
+#tunghai-campus {
+  color-scheme: light dark;
+  --thu-ink: var(--foreground, #183229);
+  --thu-soft: var(--muted-foreground, #526057);
+  --thu-line: var(--border, #d9dfd5);
+  --thu-paper: var(--card, #fff);
+  --thu-field: var(--input, #d4ddd5);
+  --thu-green: #23634e;
+  --thu-map-ink: #174033;
+  width: 100%;
+  margin: auto;
+  color: var(--thu-ink);
+  font-family: system-ui, "PingFang TC", "Microsoft JhengHei", sans-serif;
+  line-height: 1.55;
+}
+#tunghai-campus *, #tunghai-campus *::before, #tunghai-campus *::after { box-sizing: border-box; }
+#tunghai-campus h1, #tunghai-campus h2, #tunghai-campus h3, #tunghai-campus p { margin: 0; }
+#tunghai-campus [hidden] { display: none !important; }
+#tunghai-campus .thu-header { display: flex; align-items: end; justify-content: space-between; gap: 16px; padding: 3px 0 17px; flex-wrap: wrap; }
+#tunghai-campus .thu-eyebrow { color: var(--thu-soft); font-size: .7rem; font-weight: 500; letter-spacing: .12em; }
+#tunghai-campus .thu-eyebrow span { display: inline-block; width: 13px; height: 1px; vertical-align: middle; background: currentColor; opacity: .4; margin: 0 4px; }
+#tunghai-campus h1 { font-family: "Songti TC", "Noto Serif TC", "PMingLiU", serif; font-weight: 500; font-size: clamp(1.75rem, 4vw, 2.55rem); line-height: 1.2; margin-top: 5px; letter-spacing: .03em; }
+#tunghai-campus h1 span { color: var(--thu-soft); font-family: system-ui, sans-serif; font-weight: 400; font-size: .51em; letter-spacing: .07em; white-space: nowrap; }
+#tunghai-campus .thu-view, #tunghai-campus .thu-map-controls { display: flex; gap: 4px; align-items: center; }
+#tunghai-campus button, #tunghai-campus select { font-family: inherit; }
+#tunghai-campus .thu-view .btn { white-space: nowrap; }
+#tunghai-campus .thu-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(174px,25%); align-items: stretch; gap: 18px; }
+#tunghai-campus .thu-map { position: relative; isolation: isolate; overflow: hidden; height: clamp(380px, 59vw, 570px); border-radius: 13px; background: radial-gradient(ellipse at 46% 24%, #f6f7ec 12%, #e0e9da 82%); color: var(--thu-map-ink); }
+#tunghai-campus .thu-canvas, #tunghai-campus .thu-labels { position: absolute; inset: 0; }
+#tunghai-campus .thu-canvas canvas { display: block; width: 100%; height: 100%; touch-action: none; cursor: grab; }
+#tunghai-campus .thu-canvas canvas:active { cursor: grabbing; }
+#tunghai-campus .thu-labels { pointer-events: none; z-index: 2; }
+#tunghai-campus .thu-marker { position: absolute; display: flex; align-items: center; gap: 5px; border: 1px solid #c9d7c8; border-radius: 6px; background: #fffcf2; color: #234e3d; padding: 3px 6px; box-shadow: 0 2px 5px #193d2f25; transform: translate(-50%,-100%); pointer-events: auto; white-space: nowrap; font-size: .72rem; min-height: 25px; }
+#tunghai-campus .thu-marker::before { content: ""; background: #4b7b5e; border-radius: 50%; width: 6px; height: 6px; flex: none; }
+#tunghai-campus .thu-marker.is-selected { color: #fff9e4; background: #214f3d; border-color: #f8d682; box-shadow: 0 2px 11px #244a3f38; }
+#tunghai-campus .thu-marker.is-selected::before { background: #f5d174; }
+#tunghai-campus .thu-compass { position: absolute; z-index: 3; top: 15px; left: 15px; width: 38px; height: 38px; display: grid; place-items: center; background: #fafbf1eb; border: 1px solid #c7d8cb; border-radius: 50%; box-shadow: 0 2px 8px #42665614; pointer-events: none; }
+#tunghai-campus .thu-compass span { position: absolute; font-size: 10px; line-height: 1; top: 3px; }
+#tunghai-campus .thu-compass i { display: block; height: 19px; width: 10px; margin-top: 7px; background: linear-gradient(#2d694f 50%, #9fb3a2 50%); clip-path: polygon(50% 0,100% 100%,50% 73%,0 100%); }
+#tunghai-campus .thu-map-controls { position: absolute; z-index: 4; right: 12px; bottom: 32px; align-items: stretch; flex-direction: column; }
+#tunghai-campus .thu-map-controls .btn { min-width: 33px; width: 33px; height: 33px; padding: 0; font-size: 19px; box-shadow: 0 1px 6px #35544222; }
+#tunghai-campus .thu-map-footer { position: absolute; z-index: 3; bottom: 9px; left: 12px; right: 12px; display: flex; justify-content: space-between; align-items: end; gap: 7px; pointer-events: none; }
+#tunghai-campus .thu-help, #tunghai-campus .thu-scale { background: #fbfcefda; border-radius: 4px; padding: 2px 6px; font-size: .66rem; white-space: nowrap; }
+#tunghai-campus .thu-scale span { display: inline-block; border: 1px solid #244e3d; border-top: 0; height: 5px; margin-right: 5px; vertical-align: 2px; }
+#tunghai-campus .thu-scale b { font-weight: 500; }
+#tunghai-campus .thu-error { position: absolute; inset: 0; align-content: center; text-align: center; padding: 35px; font-size: .92rem; }
+#tunghai-campus .thu-sidebar { padding: 7px 0; min-width: 0; }
+#tunghai-campus .thu-panel-title { font-size: 1rem; font-weight: 500; margin-bottom: 12px; }
+#tunghai-campus .thu-picker-label { display: block; color: var(--thu-soft); font-size: .76rem; margin-bottom: 6px; }
+#tunghai-campus .form-select { width: 100%; }
+#tunghai-campus .thu-detail { border-top: 1px solid var(--thu-line); margin-top: 18px; padding-top: 15px; }
+#tunghai-campus .thu-area { font-size: .75rem; color: var(--thu-soft); }
+#tunghai-campus .thu-place { font-family: "Songti TC", "Noto Serif TC", "PMingLiU", serif; font-size: 1.52rem; line-height: 1.22; font-weight: 500; margin-top: 6px; }
+#tunghai-campus .thu-english { margin-top: 5px; color: var(--thu-soft); font-size: .75rem; }
+#tunghai-campus .thu-description { margin-top: 12px; font-size: .86rem; line-height: 1.71; }
+#tunghai-campus a { color: inherit; text-underline-offset: 2px; }
+#tunghai-campus .thu-place-source { display: inline-block; color: var(--thu-soft); margin-top: 9px; font-size: .75rem; }
+#tunghai-campus .thu-focus { width: 100%; margin-top: 14px; }
+#tunghai-campus .thu-focus span { margin-left: 3px; }
+#tunghai-campus .thu-sources { margin-top: 12px; color: var(--thu-soft); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font-size: .7rem; }
+#tunghai-campus .thu-sources p:last-child { display: flex; flex-wrap: wrap; gap: 2px 6px; }
+@media (max-width: 680px) {
+  #tunghai-campus .thu-layout { grid-template-columns: minmax(0,1fr); gap: 9px; }
+  #tunghai-campus .thu-map { height: clamp(365px, 77vw, 465px); }
+  #tunghai-campus .thu-sidebar { padding: 5px 0; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); align-items: center; gap: 6px 8px; }
+  #tunghai-campus .thu-picker-label { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+  #tunghai-campus .thu-panel-title, #tunghai-campus .thu-focus { margin: 0; }
+  #tunghai-campus .thu-detail { grid-column: 1/-1; margin-top: 5px; padding-top: 9px; }
+  #tunghai-campus .thu-focus { grid-column: 1/-1; width: max-content; }
+}
+@media (pointer: coarse) {
+  #tunghai-campus .thu-map-controls .btn { width: 44px; height: 44px; }
+  #tunghai-campus .thu-marker { min-height: 34px; }
+}
