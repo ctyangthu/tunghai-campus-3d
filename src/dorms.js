@@ -66,7 +66,7 @@ export function styledBuildingSpec(building) {
   return {style: number === 11 ? 'white' : 'brick', floors: levels ?? 2};
 }
 
-function signedArea(points) {
+export function signedArea(points) {
   return points.reduce((sum, [x, z], i) => {
     const [nx, nz] = points[(i + 1) % points.length];
     return sum + x * nz - nx * z;
@@ -74,7 +74,7 @@ function signedArea(points) {
 }
 
 // Minimum-area bounding rectangle: {cx, cz, angle, half: [along, across]}.
-function orientedBox(points) {
+export function orientedBox(points) {
   let best = null;
   points.forEach(([ax, az], i) => {
     const [bx, bz] = points[(i + 1) % points.length];
@@ -111,7 +111,7 @@ function hipRoof(box, eave, overhang, pitch) {
 }
 
 // Moves each vertex so every edge shifts `distance` metres outward (negative: inward).
-function offsetRing(ring, winding, distance) {
+export function offsetRing(ring, winding, distance) {
   const normals = ring.map(([x, z], i) => {
     const [nx, nz] = ring[(i + 1) % ring.length];
     const length = Math.hypot(nx - x, nz - z) || 1;
@@ -126,7 +126,7 @@ function offsetRing(ring, winding, distance) {
 
 // For footprints that are not rectangles: every edge slopes up to a flat deck, which
 // reads as a hipped tile roof from the usual viewing angles.
-function edgeRoof(ring, winding, eave, overhang, inset, rise) {
+export function edgeRoof(ring, winding, eave, overhang, inset, rise) {
   const outer = offsetRing(ring, winding, overhang), inner = offsetRing(ring, winding, -inset);
   const top = eave + rise;
   const vertices = [];

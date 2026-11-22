@@ -3,6 +3,8 @@ const walks = 'https://fineart.thu.edu.tw/web/visit/page.php?scid=44&sid=72';
 const earlyCampus = 'https://www.tchac.taichung.gov.tw/historybuilding?pid=252&uid=37';
 const park = 'https://thupr.thu.edu.tw/newsdetail.php?c=60&id=53364';
 const newDormSource = 'https://www.twarchitect.org.tw/works/東海大學學生宿舍/';
+const housing = 'https://property.thu.edu.tw/web/student/detail.php?id=8';
+const earlyHousing = 'https://www.tchac.taichung.gov.tw/uploads/tchac/files/202105/5ee76a08-09f2-485d-971c-66f35e46a3f0.pdf';
 const farm = 'https://thufarm.thu.edu.tw/tw/%E8%AA%8D%E8%AD%98%E7%89%A7%E5%A0%B4/';
 
 // Places follow the school's campus map (東海大學校園地圖): its five legend areas, its
@@ -89,6 +91,10 @@ export const places = [
   ['w1344753003',3,null,'新建學生宿舍32棟','Student Residence 32','臺灣大道旁的新建女宿。2024 年落成，地上九層，立面以淺色外牆與紅磚格柵交錯呈現。',newDormSource,0,122],
   ['w1344753007',3,null,'新建學生宿舍33棟','Student Residence 33','與 32 棟同一計畫興建的新建男宿。2024 年落成，地上九層，透過階梯廣場銜接既有宿舍區。',newDormSource,0,122],
   ['faculty-residence-136',3,null,'東海路136號教師宿舍','Faculty Residence','校方列為新進教師暨退休宿舍，由三棟公寓式建物組成。校方配置圖列出各棟 1 至 7 樓，模型高度與外觀為近似。','https://ppms.thu.edu.tw/web/student/detail.php?cid=1&id=8',0,108],
+  ['faculty-house-a',3,null,'A House 教職員宿舍','A House (Early Faculty Housing)','舊式 A 型宿舍：民國 46 年前完工的獨棟平房，木構架屋頂，50.40 坪（3 房 2 廳、1.5 套衛浴、2 儲藏室、1 傭人房）。與 B House 同為早期教職員宿舍，配置順應坡地並轉 45 度。模型把門牌單號獨棟、平面較寬或呈 T 字、十字形者歸為 A 型（如東海路 9、12、29 號），白牆、深色木柱與四坡灰瓦頂為近似外觀。',housing,0,80,110],
+  ['faculty-house-b',3,null,'B House 教職員宿舍','B House (Early Faculty Housing)','舊式 B 型宿舍：民國 46 年前完工的獨棟平房，木構架屋頂，52.30 坪（3 房 2 廳、1.5 套衛浴、1 儲藏室、1 傭人房）。東海路 24 號為 B House，平面是長條主屋加一側翼；白牆、黑色窗框、深灰牆基與兩坡灰瓦頂取自其現況照。同樣平面的獨棟宿舍（如 2、8、20、22、34、41 號）一併歸為 B 型。',earlyHousing,0,80,110],
+  ['faculty-house-c',3,null,'C House 教職員宿舍','C House (Semi-detached Faculty Housing)','舊式 C 型宿舍：民國 68 年 9 月前完工的雙併平房，木構架屋頂，每戶 35.60 坪（3 房 2 廳、1.5 套衛浴、1 中庭）。一棟兩個門牌（如東海路 1、3 號，5、7 號），模型在長邊中央以分戶牆分開，兩側各設入口。',housing,0,90,120],
+  ['scholars-residence',3,null,'學人宿舍','Scholars’ Residence','民國 68 年 9 月至 81 年 7 月完工的加強磚造二層連棟宿舍，位於東海路 11、13、15、17、19、21、23 巷與 130、132 巷，各戶前後錯開。SA（17.52 坪）與 SC（26.71 坪）一層一戶，門牌以 A、B 分上下層；SB（43.56 坪）為兩層一戶，在 11 巷與 15 巷。',housing,0,150,170],
 
   // 其他區 Others
   ['w129849196',4,66,'實習農牧場（牛棚）','Experimental Farm (Cattle)','東海牧場的牛棚，緊鄰養牛草地。',farm,0,90],
@@ -110,7 +116,7 @@ export const places = [
   ['w227117506',5,null,'原藝術中心','Former Arts Center','陳其寬設計的市定古蹟。薄殼混凝土屋面以倒傘形態呈現，建築群圍出合院。','https://www.tchac.taichung.gov.tw/building?pid=173&uid=33',0,140],
   ['w341450780',5,null,'相思林','Acacia Woods','校園西側的林地，林間步道銜接東海別墅與第一教學區。',walks,0,260],
   ['w227124385',5,null,'陽光草坪','Sunshine Lawn','鄰近女生宿舍，在銘賢堂往乳品小棧的藝文散步路線上。',walks,0,195],
-  ['w1507803521',5,null,'小王子玫瑰園','The Little Prince Rose Garden','東海湖旁的園地有兩座玫瑰造型花圃，於 2025 年校慶揭幕。',park,0,175],
+  ['w1507803521',5,null,'小王子玫瑰園','The Little Prince Rose Garden','東海大學與古典玫瑰園合作的玫瑰園，2025 年校慶揭幕。兩朵玫瑰造型的花圃以碎石步道盤旋到花心，旁有葉片造型的銀綠色花圃，南、西兩側圍著綠籬。',park,0,105],
 ].map(([id,zone,number,name,english,description,source,featured,width,aerialHeight]) =>
   ({id,zone,number,name,english,description,source,featured,width,aerialHeight}));
 
@@ -132,6 +138,10 @@ export const placePoints = [
   {osm: 'farm-deer', x: 519.0, z: -358.7},              // w227077833 鹿舍
   {osm: 'horse-riding', x: 329.8, z: -152.2},           // w227078944 馬場
   {osm: 'elementary-gate', x: 184.8, z: -493.3},        // n3721534708 附中校門 on 臺灣大道
+  {osm: 'faculty-house-a', x: -35, z: 246.1},           // w227075005 東海路 29 號
+  {osm: 'faculty-house-b', x: 70, z: 95.1},             // w227024179 東海路 24 號
+  {osm: 'faculty-house-c', x: 166.6, z: 129.9},         // w227024177 東海路 1、3 號
+  {osm: 'scholars-residence', x: 175.1, z: 310.8},      // w226997112 東海路 13 巷
 ];
 
 // Buildings that select a place other than their own OpenStreetMap id.
