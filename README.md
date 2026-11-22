@@ -12,7 +12,9 @@
 
 ## 建置
 
-執行 `npm ci` 和 `npm run build`，然後以支援 WebGL 2 的瀏覽器開啟 `docs/index.html`。GitHub Pages 從 `main` 分支的 `docs/` 發布。
+執行 `npm ci` 和 `npm run build`，然後以支援 WebGL 2 的瀏覽器開啟 `docs/index.html`。
+
+`docs/index.html` 是建置產物，不納入版本控制。GitHub Actions（`.github/workflows/pages.yml`）在每次推送到 `main` 時重新建置，並把 `docs/` 發布到 GitHub Pages；pull request 只建置不發布。儲存庫的 Settings → Pages → Build and deployment 的 Source 須設為「GitHub Actions」。
 
 ## 資料產生
 
