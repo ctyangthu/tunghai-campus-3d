@@ -7,6 +7,7 @@ import {activityCenterId} from './activity-center.js';
 import {newDormIds} from './new-dorms.js';
 import {applyCampusRevisions} from './campus-revisions.js';
 import {facultyResidenceId} from './faculty-residence.js';
+import {mainGateId, secondGateId} from './gates.js';
 
 const root=document.getElementById('tunghai-campus');
 const el=selector=>root.querySelector(selector);
@@ -14,7 +15,12 @@ const {clamp}=T.MathUtils;
 const select=el('#thu-destination');
 const map=el('.thu-map');
 const mapButtons=[...root.querySelectorAll('[data-action],[data-view]')];
-const requestedPlace=places.find(p=>p.id===new URLSearchParams(window.location.search).get('place'));
+const query=new URLSearchParams(window.location.search);
+const requestedPlace=places.find(p=>p.id===query.get('place'));
+const requestedView=(()=>{
+  const values=(query.get('view')||'').split(',').map(Number);
+  return values.length>=3&&values.every(Number.isFinite)?values:null;
+})();
 let selected=places[0];
 let navigate=()=>{};
 
@@ -122,8 +128,10 @@ function init({geo:sourceGeo,terrain,chapel}) {
   let state={x:board.x,y:76,z:board.z,az:orbit.az,el:orbit.el,size:1};
   let tween=null, frame=0, overview=true, focusActive=false;
   const active=new Map();
-  const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId, ...newDormIds]);
+  const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId, ...newDormIds, mainGateId, secondGateId]);
   const closeAngles = {
+    [mainGateId]:{az:2.72,el:.46},
+    [secondGateId]:{az:2.62,el:.5},
     w227101621:{az:.72,el:.49},
     [fineArtsId]:{az:1.03,el:.43},
     [provincialBuildingId]:{az:2.49,el:.48},
@@ -250,6 +258,13 @@ function init({geo:sourceGeo,terrain,chapel}) {
       focusedOnLoad=true;
       const point=coordinates.get(requestedPlace.id);
       if(point) navigate(requestedPlace);
+    }
+    // ?view=x,z,size[,azimuth,elevation] opens a camera position in scene metres.
+    if(requestedView&&!focusedOnLoad){
+      focusedOnLoad=true;
+      const [x,z,size,az=orbit.az,el=orbit.el]=requestedView;
+      overview=false;
+      go({x,z,y:height(x,z),size,az,el},0);
     }
     if(overview) {
       if(tween){tween.to.size=pageFit(view==='top'?bird:orbit);}

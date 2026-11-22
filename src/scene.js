@@ -4,6 +4,8 @@ import {provincialBuildingId, provincialBuilding} from './provincial-building.js
 import {activityCenterBuilding, activityCenterId} from './activity-center.js';
 import {newDormBuilding, newDormIds} from './new-dorms.js';
 import {facultyResidenceId, facultyResidenceBuilding, facultyResidenceBuildingIds} from './faculty-residence.js';
+import {createDormBatch, dormBuilding, dormSpec} from './dorms.js';
+import {addGates} from './gates.js';
 
 const detailedBuildings = new Map([
   [fineArtsId, fineArtsBuilding],
@@ -42,6 +44,17 @@ export function makeWorld(scene, geo, terrain, chapel) {
     const first = elevation[pos]*(1-a) + elevation[pos+1]*a;
     const second = elevation[pos+nx]*(1-a) + elevation[pos+nx+1]*a;
     return ((first*(1-b)+second*b)/10 - 100) * 1.24;
+  }
+
+  // Height of the rendered ground mesh itself: the same two triangles per grid cell
+  // as PlaneGeometry, so draped surfaces sit exactly on it.
+  function surface(x,z) {
+    const xi = clamp((x-west)/width*(nx-1), 0, nx-1.0001);
+    const zi = clamp((z-north)/depth*(nz-1), 0, nz-1.0001);
+    const i = Math.floor(xi), j = Math.floor(zi), s = xi-i, t = zi-j;
+    const h = (a,b) => ((elevation[b*nx+a]/10 - 100) * 1.24);
+    const ha = h(i,j), hb = h(i,j+1), hc = h(i+1,j+1), hd = h(i+1,j);
+    return s+t <= 1 ? ha + (hd-ha)*s + (hb-ha)*t : hc + (hb-hc)*(1-s) + (hd-hc)*(1-t);
   }
 
   const geometry = new T.PlaneGeometry(width,depth,nx-1,nz-1);
@@ -121,8 +134,14 @@ export function makeWorld(scene, geo, terrain, chapel) {
     group.add(mesh);
     return mesh;
   }
+  const dormBatch = createDormBatch();
   for (const f of geo.buildings) {
     if (f.osm === 'w227101621') continue;
+    const dorm = dormSpec(f);
+    if (dorm) {
+      buildings.add(dormBuilding(f, height, dorm, dormBatch).group);
+      continue;
+    }
     const makeDetailedBuilding = detailedBuildings.get(f.osm);
     if (makeDetailedBuilding) {
       const refined = makeDetailedBuilding(f, height);
@@ -223,6 +242,7 @@ export function makeWorld(scene, geo, terrain, chapel) {
     }
     buildings.add(b);
   }
+  dormBatch.flush(buildings);
   scene.add(buildings);
 
   const churchPoint=geo.pois.find(p=>p.osm==='w227101621');
@@ -264,6 +284,11 @@ export function makeWorld(scene, geo, terrain, chapel) {
     scene.add(b);
     byId.set(tower.osm,b.position.y+6);
   }
+
+  const gates = addGates(scene, height, surface);
+  hits.push(...gates.pickables);
+  plantingExclusions.push(...gates.exclusions);
+  for (const [id, top] of gates.tops) byId.set(id, top + 2.5);
 
   plantTrees(scene,geo,height,bounds,plantingExclusions);
   return {height,board,byId,hits};

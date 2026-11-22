@@ -1,5 +1,6 @@
 import {activityCenterFootprint} from './activity-center.js';
 import {facultyResidenceId, facultyResidenceBuildingIds} from './faculty-residence.js';
+import {secondGatePoint} from './gates.js';
 
 // The OSM relation is a campus park boundary enclosing separated facilities.
 // The source layer remains available for download under the ODbL.
@@ -14,7 +15,7 @@ export function applyCampusRevisions(geo) {
   };
   return {
     ...geo,
-    pois: residencePoint ? [...geo.pois,residencePoint] : geo.pois,
+    pois: [...geo.pois, ...(residencePoint ? [residencePoint] : []), secondGatePoint],
     buildings: [
       ...geo.buildings.filter(building=>building.osm!==carbonNeutralityPark),
       activityCenterFootprint,
