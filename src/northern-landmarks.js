@@ -306,7 +306,8 @@ function auditorium(item,terrainHeight) {
   const model = modelFor(item,terrainHeight);
   const wall = paint('#ceba98');
   const ochre = tiledRoof('#c3975c');
-  const gray = tiledRoof('#8c8d80');
+  // The 2024 orthophoto shows a light grey roof carrying two solar arrays.
+  const gray = tiledRoof('#aeb0a9');
   const roofStrip = paint('#88a99d');
   const x0=-27.65, x1=27.2, rear=-41.25, front=41.2;
   const entryLevel=-.4, lip=5.65, facade=front-8.3;
@@ -332,6 +333,17 @@ function auditorium(item,terrainHeight) {
     model.surface([[x,13.88,ridgeB-.05],[x+width,13.88,ridgeB-.05],[x+width,12.18,back],[x,12.18,back]],
       [0,1,2,0,2,3],roofStrip);
   }
+
+  // Solar arrays on both roof planes, following their gentle slope.
+  const solar = paint('#3d4f63');
+  const plane = (z0,z1,y0,y1) => {
+    for (let z=z0+1.6; z<z1-1.2; z+=2.05) {
+      const y=y0+(y1-y0)*(z-z0)/(z1-z0)+.16;
+      for (let x=x0+3; x<x1-3; x+=2.3) model.box(x,y,z,2.15,.1,1.85,solar);
+    }
+  };
+  plane(rear+1.5,ridgeA-1,13.18+.02*1.5,14.6-.04);
+  plane(ridgeB+1,back-1.5,13.85-.05,12.15+.07);
 
   const canopy = [];
   for (let i=0;i<=12;i++){

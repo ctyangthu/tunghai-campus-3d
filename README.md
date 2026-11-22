@@ -36,6 +36,8 @@
 | --- | --- | --- | --- |
 | `data/terrain.json` | `npm run data:terrain` | Mapzen Terrain Tiles，zoom 14，雙線性取樣 | 逐位元相同 |
 | `docs/data/campus-geo.json` | `npm run data:osm` | OpenStreetMap | 校界、315 棟建物、135 塊土地、22 處標籤、樹木皆相同；道路 374 段中 323 段相同 |
+| `data/campus-extras.json` | `npm run data:extras` | OpenStreetMap 中未標為建物的設施：學生福音中心、養雞場雞舍、馬場 | 新增 |
+| `data/roof-colors.json` | `npm run data:roofs` | 國土測繪中心 2024 年正射影像，逐棟取樣屋頂顏色（需 Python 3 與 Pillow） | 新增 |
 | `data/luce-chapel.json` | `npm run chapel:export`、`npm run chapel:import <檔案>` | 教堂模型，經 glTF 編輯 | 匯出再匯入逐位元相同 |
 
 ### 地圖資料（OpenStreetMap）
@@ -72,6 +74,7 @@ node scripts/compare-geo.mjs docs/data/campus-geo.json .cache/campus-geo.json --
 - 省政研究大樓沿用地圖輪廓。紅磚立面、入口雨棚、玻璃格窗及深色坡屋頂參考外觀照與公開空拍。 [外觀照片](https://commons.wikimedia.org/wiki/File:%E7%9C%81%E6%94%BF%E7%A0%94%E7%A9%B6%E5%A4%A7%E6%A8%93.jpg) · [空拍來源，第 6 頁](https://ilabor.ntpc.gov.tw/ckeditor/downloadFile/629301842?serverName=00249f5a-49d5-47e4-9481-f0be739637df)
 - 宿舍 32、33 棟保留 OpenStreetMap 輪廓，依建築師公布的地上九層、29.85 公尺重建。 [校方沿革](https://sustainable.thu.edu.tw/public/cat1-1/) · [建築師作品資料](https://www.twarchitect.org.tw/works/東海大學學生宿舍/)
 - 楊瑞祥綜合活動大樓以國土測繪中心 2024 年正射影像的施工基礎定位，並參考校方 2026 年外觀照片近似建模。田徑場跑道色澤依校方照片更新。 [國土測繪中心圖資](https://maps.nlsc.gov.tw/S09SOA/pro/Wmts_ajax_main.jsp) · [校方場館照片](https://thupr.thu.edu.tw/newsdetail.php?c=60&id=53630)
+- 建物屋頂顏色取自國土測繪中心 2024 年正射影像：`scripts/build-roof-colors.py` 在每棟建物輪廓內取屋頂像素的中位數，略去邊緣、樹冠與陰影。牆面顏色、樓高與屋頂形式仍為近似。依校園地圖逐號比對後，補上地圖資料未標為建物的學生福音中心、養雞場雞舍與馬場，並依影像繪出第二教學區運動場的內野紅土。 [國土測繪中心正射影像](https://maps.nlsc.gov.tw/)
 - 地標的名稱、編號與五個分區依東海大學校園地圖（教學行政區、生活機能區、附屬學校區、學生宿舍及教職員宿舍區、其他區），未編號的校門與景點另列一組。校園地圖的 12 號行政大樓為校長室等單位所在的院落，13 號行政中心為教務處、學務處、總務處所在的建築群；OpenStreetMap 將行政中心分為五個翼棟，此處合為一個地標。師資培育中心與銘賢樓的位置依校園地圖推定。 [東海大學校園地圖](https://thupr.thu.edu.tw/traffic.php)
 - 中正紀念堂的入口朝東，與圖書館的入口同樣面向文理大道，金色弧形雨棚、柱列與台階設在東側立面。大智慧科技大樓沿用地圖輪廓，系所樓層依各單位公告，立面與樓高為近似。智慧碳中和園區的拱形溫室、棚架與太陽能屋頂建築依 2024 年正射影像配置。 [資訊工程學系樓層圖](https://www.cs.thu.edu.tw/web/page/page.php?lang=zh_tw&scid=18&sid=12) · [圖資處服務台](https://lis.thu.edu.tw/web/page/page.php?lang=zh_tw&scid=57&sid=106) · [智慧碳中和園區](https://sustainable.thu.edu.tw/campus/carbon/)
 - 大門（第一教學區校門）依國土測繪中心 2024 年正射影像配置車道與中央分隔島。校門於 2024 年 7 月至 8 月拓寬；從臺灣大道面向大門，右側（西側）的白色校名塔約 15 公尺高，塔頂東西兩面嵌有校名；塔身比例與警衛亭、柵欄機為近似建模。第二教學區校門依同一影像與交通及安全組公告設置車辨柵欄機與繳費機。 [校門拓寬工程公告](https://business.thu.edu.tw/web/news/detail.php?id=151) · [東海大學校門介紹](http://thugo.thu.edu.tw/chinese/04_school/02_detail.php?sdid=3) · [交通及安全組公告](https://tcs.thu.edu.tw/web/news/list.php?page=2)

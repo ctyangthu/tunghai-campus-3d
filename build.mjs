@@ -4,7 +4,7 @@ import {build} from 'esbuild';
 import {places} from './src/places.js';
 
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
-const [markup, style, common, license, geo, terrain, chapel, bundle] = await Promise.all([
+const [markup, style, common, license, geo, terrain, chapel, extras, roofColors, bundle] = await Promise.all([
   read('src/shell.html'),
   read('src/style.css'),
   read('src/standalone.css'),
@@ -12,9 +12,11 @@ const [markup, style, common, license, geo, terrain, chapel, bundle] = await Pro
   read('docs/data/campus-geo.json').then(JSON.parse),
   read('data/terrain.json').then(JSON.parse),
   read('data/luce-chapel.json').then(JSON.parse),
+  read('data/campus-extras.json').then(JSON.parse),
+  read('data/roof-colors.json').then(JSON.parse),
   build({entryPoints: ['src/app.js'], bundle: true, minify: true, write: false, legalComments: 'none'}),
 ]);
-const data = gzipSync(JSON.stringify({geo,terrain,chapel}), {level: 9}).toString('base64');
+const data = gzipSync(JSON.stringify({geo,terrain,chapel,extras,roofColors}), {level: 9}).toString('base64');
 const script = bundle.outputFiles[0].text.replace(/[ \t]+$/gm, '').replace(/<\/script/gi, '<\\/script');
 const html = `<!doctype html>
 <html lang="zh-Hant">

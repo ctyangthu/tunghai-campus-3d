@@ -18,6 +18,7 @@ export const places = [
   ['w367195923',0,1,'社會科學院','College of Social Sciences','深灰坡頂分覆各翼。可見混凝土柱梁、紅磚端牆、成列窗格與開敞走廊，地下樓層設有芳華廳。','https://sosc.thu.edu.tw/',0,150,240],
   ['w367196899',0,2,'圖書館','Library','圖書館與圖書暨資訊處所在。地上四層採回字形配置，橘棕色坡頂與青綠色屋面帶環繞中央天井，入口柱廊朝東面向文理大道。','https://lis.thu.edu.tw/web/building/page.php?lang=zh_tw&scid=21&sid=35',1,120,190],
   ['w1302996436',0,3,'大智慧科技大樓','Science & Technology Building','應用物理系、資訊工程學系與圖資處服務台（地下一樓）等單位設於此，五樓有階梯教室。與中正紀念堂隔著廣場相對；模型的樓層數與立面細部為近似。','https://www.cs.thu.edu.tw/web/page/page.php?lang=zh_tw&scid=18&sid=12',0,120],
+  ['sustainability-office',0,4,'永續發展辦公室','Sustainable Development Office','位於校友會館建築群的西南側。校園地圖將它與校友會館分開標示，地圖資料則併入校友會館的輪廓，點選建物會選到校友會館。','https://sustainable.thu.edu.tw/',0,70],
   ['w227101080',0,5,'建築系館','Dept. of Architecture Building','建築學系的系館，位於第一教學區北側，東鄰工業設計系館。',campusMap,0,80],
   ['w129849230',0,6,'工業設計系館','Dept. of Industrial Design Building','工業設計學系的系館，位於建築系館與語文館之間。',campusMap,0,75],
   ['w368066316',0,7,'語文館','Languages Building','四翼平屋頂圍成中庭。靠人文大樓一側的入口可見小段紅瓦雨棚與圓形月洞門。',campusMap,0,95,155],
@@ -28,8 +29,8 @@ export const places = [
   ['w368304652',0,12,'行政大樓','Administration Building','校長室、副校長辦公室、秘書室、人事室、公共事務暨校友服務處與第一會議室所在，與秘書室等翼棟圍合草地中庭。灰瓦坡頂下可見清水混凝土柱梁、木框格窗與二樓外廊。',earlyCampus,0,70,120],
   ['administration-center',0,13,'行政中心','Administration Center','教務處、學務處、總務處、勞作教育處、軍訓室與會計室所在，位於行政大樓對面。低層灰瓦坡頂與紅磚牆的翼棟沿坡地圍繞中庭。',campusMap,0,110],
   ['r11031919',0,14,'博雅書院','Po-Ya School','設於宿舍30棟的住宿書院。校園地圖將其列入教學行政區。',campusMap,0,95],
-  ['w368304680',0,15,'法律學院','College of Law','系館、教室和實習法庭環繞中庭，延續文理大道沿線的低層灰瓦坡頂。','https://law.thu.edu.tw/',0,92],
-  ['w368071585',0,16,'農業暨健康學院','College of Agriculture & Health','鄰近文理大道西側，前廊入口朝向大道，景觀、食科與畜產等系的研究室和教室沿坡地圍成中庭。','https://agr.thu.edu.tw/',0,98],
+  ['w368304680',0,15,'法律學院','College of Law','法律學系系館、法學院教室和實習法庭環繞中庭，設有波錠廳。延續文理大道沿線的低層灰瓦坡頂。','https://law.thu.edu.tw/',0,92],
+  ['w368071585',0,16,'農業暨健康學院','College of Agricultural and Health','鄰近文理大道西側，前廊入口朝向大道，景觀、食科與畜產等系的研究室和教室沿坡地圍成中庭。','https://agr.thu.edu.tw/',0,98],
   ['w368071586',0,17,'工學院','College of Engineering','前廊與三面教室、研究室圍合中庭，延續文理大道早期校舍的灰瓦、磚牆與柱梁構造。',walks,0,85],
   ['w368249647',0,18,'理學院','College of Science','灰瓦雙坡屋頂覆蓋教室、研究室和前廊。各翼棟隨地勢排列，中間保留庭院。',walks,0,90],
   ['w367194998',0,19,'化學系館','Dept. of Chemistry Building','化學系所在的系館，位於理學院南側，鄰近基礎科學大樓。',campusMap,0,75],
@@ -72,9 +73,9 @@ export const places = [
 
   // 附屬學校區 Affiliated School Area
   ['affiliated-school',2,53,'東大附屬高級中等學校','The Affiliated High School of THU','校地位於大門東側，涵蓋國中部、高中部教學大樓與圖書館。',campusMap,0,190],
-  ['w1300546479',2,54,'東大附中小學部','Elementary Division','附屬學校的小學部，位於附小門南側。',campusMap,0,110],
-  ['w1300546480',2,55,'附屬小學活動中心','Elementary Division Activity Center','小學部南側的活動中心。',campusMap,0,90],
-  ['affiliated-kindergarten',2,56,'附屬幼稚園','Affiliated Kindergarten','附屬學校小學部附設的幼兒園。',campusMap,0,110],
+  ['w1300546479',2,54,'東大附屬高級中等學校小學部','The Affiliated High School of THU – Elementary Division','附屬學校小學部的南北向教學大樓，東側圍出中庭水池。',campusMap,0,110],
+  ['w1300546481',2,55,'附屬小學活動中心','Elementary Division Activity Center','小學部南側獨立的大跨距建築，校園地圖將 55 號標在這一棟。（OpenStreetMap 把北側的另一棟標為活動中心，此處依校園地圖。）',campusMap,0,90],
+  ['w227009300',2,56,'附屬幼稚園','The Affiliated Kindergarten of Tunghai University','附屬學校小學部附設的幼兒園（東大附幼），位於臺灣大道旁、附中教學大樓北側。',campusMap,0,90],
   ['w227009294',2,57,'教育研究所','Graduate Institute of Education','設於附中教學大樓內。',campusMap,0,90],
   ['w1014633354',2,58,'師資培育中心','Center for Teacher Education','校園地圖標示於教育研究所旁的附中綜合大樓一帶；模型位置依地圖推定。',campusMap,0,90],
 
@@ -84,7 +85,7 @@ export const places = [
   ['w226831396',3,61,'第二教學區學生宿舍','Student Residence Hall, Second Teaching Area','72、73 棟為平屋頂的中高層宿舍，屋頂設有太陽能板。',campusMap,0,140],
   ['w227124380',3,62,'康敦樓','Congdon House','原校長公館，2026 年整修後重新啟用。白牆、木窗、灰瓦與上層陶管漏牆取自整修後外觀。','https://thupr.thu.edu.tw/newsdetail.php?id=53442',0,46,105],
   ['w367762370',3,63,'衛理會館','Wesley House','陳其寬設計的白牆建築沿坡地展開。前後棟的灰瓦坡頂之間留有天井，兩側可見不同樓層高度。','https://www.tchac.taichung.gov.tw/historybuilding?pid=211&uid=34',0,80,126],
-  ['shansi-house',3,64,'銘賢樓','Shansi House','校園地圖標示於楊瑞祥綜合活動大樓東南側的宿舍；模型位置依地圖推定。',campusMap,0,90],
+  ['shansi-house',3,64,'銘賢樓','Shansi House','楊瑞祥綜合活動大樓東南側的兩棟單層宿舍，校園地圖將 64 號標在兩棟之間（地圖資料標為男單身宿舍）。',campusMap,0,90],
   ['w1344753003',3,null,'新建學生宿舍32棟','Student Residence 32','臺灣大道旁的新建女宿。2024 年落成，地上九層，立面以淺色外牆與紅磚格柵交錯呈現。',newDormSource,0,122],
   ['w1344753007',3,null,'新建學生宿舍33棟','Student Residence 33','與 32 棟同一計畫興建的新建男宿。2024 年落成，地上九層，透過階梯廣場銜接既有宿舍區。',newDormSource,0,122],
   ['faculty-residence-136',3,null,'東海路136號教師宿舍','Faculty Residence','校方列為新進教師暨退休宿舍，由三棟公寓式建物組成。校方配置圖列出各棟 1 至 7 樓，模型高度與外觀為近似。','https://ppms.thu.edu.tw/web/student/detail.php?cid=1&id=8',0,108],
@@ -101,7 +102,7 @@ export const places = [
 
   // 校門與景點 Gates & landmarks
   ['n5439892666',5,null,'大門','Main Gate','第一教學區的大門，由臺灣大道進入約農路。2024 年拓寬後，中央分隔島兩側各有兩線汽車道與機車道，設有警衛亭與車牌辨識柵欄。從臺灣大道面向大門，右側（西側）立有約 15 公尺高的白色校名塔，塔頂東西兩面嵌有校名。','https://business.thu.edu.tw/web/news/detail.php?id=151',2,92],
-  ['n3721534704',5,null,'附小門','Elementary Division Gate','附屬學校小學部旁的出入口。',campusMap,0,70],
+  ['elementary-gate',5,null,'附小門','Elementary Division Gate','附屬學校在臺灣大道上的出入口，位於大門與第二教學區校門之間。',campusMap,0,70],
   ['second-teaching-area-gate',5,null,'第二教學區校門','Second Teaching Area Gate','由臺灣大道慢車道經力行路進入第二教學區，雙向各兩線車道，設有車牌辨識柵欄機與繳費機，往管理學院與省政研究大樓。','https://tcs.thu.edu.tw/web/news/list.php?page=2',0,70],
   ['w367700897',5,null,'文理大道','Wenli Boulevard','校園的步行主軸串連圖書館、校友鐘樓與兩側院落。文、理、工學院的灰瓦坡屋頂和合院配置，延續到後來興建的校舍。',earlyCampus,1,286],
   ['n2358488959',5,null,'校友鐘樓','Alumni Bell Tower','位於文理大道中央的草帶上，兩根混凝土柱以橫梁相連，鐘懸在開放的塔身內。','https://labor.thu.edu.tw/labor-design-detail.php?i=3',0,34],
@@ -113,17 +114,28 @@ export const places = [
 ].map(([id,zone,number,name,english,description,source,featured,width,aerialHeight]) =>
   ({id,zone,number,name,english,description,source,featured,width,aerialHeight}));
 
-// Marker points for legend entries that are areas without a building outline in the
-// map data. Coordinates are local metres (x east, z south), from OpenStreetMap: the
-// centroid of the named way, or for the residence areas the mean of their buildings.
+// Label points. Legend entries without a building outline get a point of their own;
+// grouped buildings (courtyards, pairs) get one at the centre of the group, where the
+// campus map puts the number. Coordinates are local metres (x east, z south).
 export const placePoints = [
+  {osm: 'sustainability-office', x: -778, z: -188},     // SW part of 校友會館 (no. 4)
+  {osm: 'w368304652', x: -540.2, z: -8.2},              // 行政大樓: 校長室, 秘書室, 公共關係室, 人事室
+  {osm: 'w368304680', x: -871.7, z: -4.2},              // 法律學院: its three wings
+  {osm: 'w368249647', x: -657.6, z: 97.1},             // 理學院: at 理學院院長室, where the map puts no. 18
+  {osm: 'w368222509', x: -663.6, z: 158.4},             // 生命科學系館: 熱帶生態研究中心, 生科系研究室
   {osm: 'student-gospel-center', x: -275.6, z: 27.5},   // w227105790 學生福音中心
   {osm: 'affiliated-school', x: 52.3, z: -354.9},       // w367700953 東海大學附屬高中
-  {osm: 'affiliated-kindergarten', x: 129.1, z: -432.3},// w367700954 附設幼兒園
-  {osm: 'mens-residence', x: -395.7, z: -205.7},        // 男生宿舍 1–21 棟
-  {osm: 'womens-residence', x: -335.2, z: 154.7},       // 女生宿舍 1–23 棟
-  {osm: 'shansi-house', x: -66, z: -121},               // campus map no. 64
+  {osm: 'mens-residence', x: -446, z: -241},            // where the campus map puts no. 59
+  {osm: 'womens-residence', x: -377, z: 136},           // where the campus map puts no. 60
+  {osm: 'shansi-house', x: -66.6, z: -119.7},           // between the two 男單身宿舍
   {osm: 'farm-poultry', x: 434.6, z: 68.3},             // w227095384 雞舍
   {osm: 'farm-deer', x: 519.0, z: -358.7},              // w227077833 鹿舍
   {osm: 'horse-riding', x: 329.8, z: -152.2},           // w227078944 馬場
+  {osm: 'elementary-gate', x: 184.8, z: -493.3},        // n3721534708 附中校門 on 臺灣大道
 ];
+
+// Buildings that select a place other than their own OpenStreetMap id.
+export const placeAliases = {
+  w227126768: 'shansi-house', w227126769: 'shansi-house',   // 男單身宿舍 → 銘賢樓
+  w368066319: 'w368222509', w227120169: 'w368222509',       // 生命科學系館
+};

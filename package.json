@@ -7,6 +7,8 @@
     "build": "node build.mjs",
     "data:osm": "node scripts/fetch-osm.mjs && node scripts/build-geo.mjs",
     "data:terrain": "node scripts/build-terrain.mjs",
+    "data:extras": "node scripts/build-extras.mjs",
+    "data:roofs": "python3 scripts/build-roof-colors.py",
     "chapel:export": "node scripts/chapel-gltf.mjs export",
     "chapel:import": "node scripts/chapel-gltf.mjs import"
   },
