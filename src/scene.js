@@ -5,6 +5,7 @@ import {activityCenterBuilding, activityCenterId} from './activity-center.js';
 import {newDormBuilding, newDormIds} from './new-dorms.js';
 import {facultyResidenceId, facultyResidenceBuilding, facultyResidenceBuildingIds} from './faculty-residence.js';
 import {styledBuilding, styledBuildingSpec} from './dorms.js';
+import {facultyHouse, facultyHouseSpec} from './faculty-housing.js';
 import {createBoxBatch} from './kit.js';
 import {technologyBuilding, technologyBuildingId} from './technology-building.js';
 import {addGates} from './gates.js';
@@ -155,6 +156,15 @@ export function makeWorld(scene, geo, terrain, chapel, roofColors = {}) {
   const styledBatch = createBoxBatch();
   for (const f of geo.buildings) {
     if (f.osm === 'w227101621') continue;
+    const house = !detailedBuildings.has(f.osm) && facultyHouseSpec(f);
+    if (house) {
+      const model = facultyHouse(f, height, house, styledBatch, roofColors[f.osm]);
+      buildings.add(model.group);
+      for (const mesh of model.pickables) mesh.userData.osm = house.place;
+      hits.push(...model.pickables);
+      if (house.representative) byId.set(house.place, model.top + 2.5);
+      continue;
+    }
     const styled = !detailedBuildings.has(f.osm) && styledBuildingSpec(f);
     if (styled) {
       buildings.add(styledBuilding(f, height, styled, styledBatch, roofColors[f.osm]).group);
