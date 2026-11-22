@@ -4,7 +4,11 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build": "node build.mjs"
+    "build": "node build.mjs",
+    "data:osm": "node scripts/fetch-osm.mjs && node scripts/build-geo.mjs",
+    "data:terrain": "node scripts/build-terrain.mjs",
+    "chapel:export": "node scripts/chapel-gltf.mjs export",
+    "chapel:import": "node scripts/chapel-gltf.mjs import"
   },
   "dependencies": {
     "three": "0.180.0"

@@ -5,7 +5,7 @@ const newDormSource = 'https://www.twarchitect.org.tw/works/東海大學學生�
 export const zones = ['第一教學區', '校園生活與牧場', '第二教學區'];
 export const places = [
   ['w227101621',0,'路思義教堂','Luce Memorial Chapel','四片曲面屋殼沿著採光縫向上收合。這座國定古蹟位在早期校園核心，草坪另一側可見畢律斯鐘樓。','https://chaplain.thu.edu.tw/web/page/page.php?scid=8&sid=29',1,140],
-  ['n3714871469',0,'畢律斯鐘樓','The Luce Bell Tower','帶有黃色琉璃面磚的狹長牆面圍著開放鐘座，與路思義教堂隔著草坪相望。','https://www.tchac.taichung.gov.tw/building?pid=170&uid=33',0,96],
+  ['n3714871469',0,'畢律斯鐘樓','Priest Bell Tower','帶有黃色琉璃面磚的狹長牆面圍著開放鐘座，與路思義教堂隔著草坪相望。','https://www.tchac.taichung.gov.tw/building?pid=170&uid=33',0,96],
   ['n5439892666',0,'第一教學區校門','First Teaching Area Entrance','由臺灣大道進入校園，沿約農路的鳳凰樹綠蔭可走往人文大樓與路思義教堂。',walks,1,190],
   ['w367700897',0,'文理大道','Wenli Boulevard','串連圖書館與早期文、理教學建築。坡道和階梯隨地勢展開，兩旁院落留有樹蔭與步行空間。','https://www.tchac.taichung.gov.tw/historybuilding?pid=252&uid=37',1,265],
   ['w368071581',0,'文學院','College of Arts','早期教學區以低層院落順應大肚山地勢，走廊連接教室與庭園。','https://www.tchac.taichung.gov.tw/historybuilding?pid=252&uid=37',0,185],
