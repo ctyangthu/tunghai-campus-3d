@@ -81,8 +81,8 @@ async function openData() {
   return new Response(stream).json();
 }
 
-function init({geo:sourceGeo,terrain,chapel}) {
-  const geo=applyCampusRevisions(sourceGeo);
+function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
+  const geo=applyCampusRevisions(sourceGeo,extras);
   const renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
   renderer.setPixelRatio(Math.min(devicePixelRatio||1, 1.8));
   renderer.outputColorSpace=T.SRGBColorSpace;
@@ -104,7 +104,7 @@ function init({geo:sourceGeo,terrain,chapel}) {
   shadow.normalBias=2.5;
   shadow.bias=-.00028;
   scene.add(sun);
-  const {height,board,byId,hits}=makeWorld(scene,geo,terrain,chapel);
+  const {height,board,byId,hits}=makeWorld(scene,geo,terrain,chapel,roofColors);
 
   const coordinates=new Map([...geo.buildings,...geo.land,...geo.pois].map(f=>[f.osm,f]));
   const [originLon,originLat]=geo.origin;

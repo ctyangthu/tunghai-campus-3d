@@ -9,6 +9,7 @@ import {createBoxBatch} from './kit.js';
 import {technologyBuilding, technologyBuildingId} from './technology-building.js';
 import {addGates} from './gates.js';
 import {addCarbonPark, carbonParkId} from './carbon-park.js';
+import {placeAliases} from './places.js';
 import {alumniBellId, alumniBellTower, courtyardWing, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
 import {northernLandmarks} from './northern-landmarks.js';
 import {westAdminLandmarks} from './west-admin.js';
@@ -46,7 +47,9 @@ function inside(x, z, points) {
   return hit;
 }
 
-export function makeWorld(scene, geo, terrain, chapel) {
+// roofColors maps OSM ids to roof colours sampled from the 2024 orthophoto
+// (data/roof-colors.json, scripts/build-roof-colors.py).
+export function makeWorld(scene, geo, terrain, chapel, roofColors = {}) {
   const [bounds, nx, nz, raw] = terrain;
   const [west,north,east,south] = bounds;
   const width = east-west, depth = south-north;
@@ -154,7 +157,7 @@ export function makeWorld(scene, geo, terrain, chapel) {
     if (f.osm === 'w227101621') continue;
     const styled = !detailedBuildings.has(f.osm) && styledBuildingSpec(f);
     if (styled) {
-      buildings.add(styledBuilding(f, height, styled, styledBatch).group);
+      buildings.add(styledBuilding(f, height, styled, styledBatch, roofColors[f.osm]).group);
       continue;
     }
     const makeDetailedBuilding = detailedBuildings.get(f.osm);
@@ -162,6 +165,11 @@ export function makeWorld(scene, geo, terrain, chapel) {
       const refined = makeDetailedBuilding(f, height);
       buildings.add(refined.group);
       hits.push(...refined.pickables);
+      const alias = placeAliases[f.osm];
+      if (alias) {
+        for (const mesh of refined.pickables) mesh.userData.osm = alias;
+        byId.set(alias, Math.max(byId.get(alias) ?? -Infinity, refined.top + 2.5));
+      }
       if (refined.plantingExclusion) plantingExclusions.push(refined.plantingExclusion);
       byId.set(f.osm, refined.top + 2.5);
       if (facultyResidenceBuildingIds.includes(f.osm)) {
@@ -170,7 +178,8 @@ export function makeWorld(scene, geo, terrain, chapel) {
       continue;
     }
     const isHist=f.x < -459 && f.x > -902 && f.z > -77 && f.z < 134 && f.height < 14;
-    const isFeatured=representatives.has(f.osm);
+    const owner=placeAliases[f.osm] ?? f.osm;
+    const isFeatured=representatives.has(f.osm) || owner!==f.osm;
     const isCourt=f.osm==='w226829984';
     const isFormerArt=f.osm==='w227117506';
     const h=(isCourt?Math.max(17,f.height):isFormerArt?4:f.height || 7)*1.12;
@@ -178,7 +187,7 @@ export function makeWorld(scene, geo, terrain, chapel) {
     const low = Math.min(grade,...f.points.map(([x,z])=>height(x,z)));
     const top = Math.max(grade+h,...f.points.map(([x,z])=>height(x,z)+2));
     const colorPick = Math.floor(hash(f.id)*5);
-    const roof = mat(isHist ? traditional[colorPick%4] : modern[colorPick]);
+    const roof = mat(roofColors[f.osm] ?? (isHist ? traditional[colorPick%4] : modern[colorPick]));
     const facade = mat(isHist ? ['#eee0bd','#d1ac86','#e4cda9','#cebb98','#dfcbaa'][colorPick] : buildingFacade[colorPick]);
     const b = new T.Group();
     b.position.set(f.x,low-.45,f.z);
@@ -243,8 +252,8 @@ export function makeWorld(scene, geo, terrain, chapel) {
         }
       }
       hits.push(...b.children);
-      byId.set(f.osm,top+2.5);
-      for(const child of b.children) child.userData.osm=f.osm;
+      byId.set(owner,Math.max(byId.get(owner) ?? -Infinity,top+2.5));
+      for(const child of b.children) child.userData.osm=owner;
     }
     buildings.add(b);
   }
@@ -341,9 +350,20 @@ function groundTexture(geo,bounds,height) {
     grass:'#bed493',park:'#b8ce9b',garden:'#aac696',meadow:'#b6cc8e',track:'#b07962',water:'#6f9d99',
     swimming_pool:'#7db3b3',farmland:'#b9cc91',orchard:'#aac18c',residential:'#cfccb3',sand:'#ddc49c',
     university:'#c8d7a2',education:'#c8d7a2'};
+  // Dirt infields traced from the 2024 orthophoto (home plate is at the NW corner).
+  const infields={w1012133728:{centre:[609,105],radius:29}};
   for(const f of geo.land) {
     const color=f.osm==='r5467507'?'#61859e':landColor[f.type];
     if (color) area(f.points,color,f.holes);
+    const infield=infields[f.osm];
+    if (infield) {
+      // Skin (all-dirt) infield, clipped by the field fence.
+      ctx.save();
+      ctx.beginPath();path(f.points,true);ctx.clip();
+      ctx.beginPath();ctx.arc(...infield.centre,infield.radius,0,Math.PI*2);
+      ctx.fillStyle='#c99a7a';ctx.fill();
+      ctx.restore();
+    }
   }
   for(let i=0;i<4300;i++){
     const x=west+hash(i+444)*(east-west), z=north+hash(i+5580)*(south-north);

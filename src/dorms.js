@@ -30,6 +30,16 @@ const STYLES = {
     wall: '#efede6', band: '#d6d2c6', roof: '#5a605d', glass: '#3f4b4d', frame: '#8a8f8b',
     floorHeight: 3.2, roofType: 'hip',
   },
+  // Farm sheds (養雞場): light metal walls under a shallow metal roof, no windows.
+  shed: {
+    wall: '#c9ccc6', band: '#aeb2ac', roof: '#8c938f', glass: '#4b5452', frame: '#9aa09b',
+    floorHeight: 3.6, roofType: 'hip', pitch: .22, windows: false,
+  },
+  // A single-storey hall under a dark tiled roof (學生福音中心).
+  hall: {
+    wall: '#e9e4d6', band: '#d0cabb', roof: '#4f5452', glass: '#3a4547', frame: '#7d7468',
+    floorHeight: 4.4, roofType: 'hip',
+  },
   modern: {
     wall: '#e4e1d7', band: '#c8c4b7', roof: '#9fa49f', glass: '#55666b', frame: '#7c8481',
     floorHeight: 3.1, roofType: 'flat',
@@ -40,6 +50,7 @@ const NAME = /^(男生|女生)?宿舍(\d+)棟/;
 
 // Returns {style, floors, solar} for a styled building footprint, or null.
 export function styledBuildingSpec(building) {
+  if (building.style) return {style: building.style, floors: building.floors ?? 1};
   if (SEPARATE.has(building.osm)) return null;
   const match = building.name.match(NAME);
   if (!match) return null;
@@ -133,8 +144,9 @@ function edgeRoof(ring, winding, eave, overhang, inset, rise) {
   return geometry;
 }
 
-export function styledBuilding(footprint, terrainHeight, spec, batch) {
-  const style = STYLES[spec.style];
+// roofColor, when given, is the colour sampled from the orthophoto.
+export function styledBuilding(footprint, terrainHeight, spec, batch, roofColor) {
+  const style = roofColor ? {...STYLES[spec.style], roof: roofColor} : STYLES[spec.style];
   const grade = terrainHeight(footprint.x, footprint.z);
   const low = Math.min(grade, ...footprint.points.map(([x, z]) => terrainHeight(x, z)));
   const ring = footprint.points.map(([x, z]) => [x - footprint.x, z - footprint.z]);
@@ -186,7 +198,7 @@ export function styledBuilding(footprint, terrainHeight, spec, batch) {
     const bays = Math.max(1, Math.floor(length / 3.4));
     const span = length / bays;
     const width = Math.min(span - .9, spec.style === 'modern' ? 2.3 : 1.6);
-    for (let floor = 0; floor < spec.floors; floor++) {
+    for (let floor = 0; floor < (style.windows === false ? 0 : spec.floors); floor++) {
       const y = floor * style.floorHeight + 1.65;
       for (let bay = 0; bay < bays; bay++) {
         const along = (bay + .5) * span;
@@ -212,12 +224,13 @@ export function styledBuilding(footprint, terrainHeight, spec, batch) {
   const rectangular = Math.abs(signedArea(ring)) / (4 * outline.half[0] * outline.half[1]) > .85;
   let top = eave;
   if (style.roofType === 'hip' && !rectangular) {
-    const roof = new T.Mesh(edgeRoof(ring, winding, eave, .95, 4.2, 2.1), paint(style.roof, T.DoubleSide));
+    const rise = style.pitch ? 1 : 2.1;
+    const roof = new T.Mesh(edgeRoof(ring, winding, eave, .6, style.pitch ? 2.5 : 4.2, rise), paint(style.roof, T.DoubleSide));
     roof.castShadow = roof.receiveShadow = true;
     group.add(roof);
-    top = eave + 2.1;
+    top = eave + rise;
   } else if (style.roofType === 'hip') {
-    const {geometry, rise, ridge} = hipRoof(outline, eave, .95, .46);
+    const {geometry, rise, ridge} = hipRoof(outline, eave, style.pitch ? .5 : .95, style.pitch ?? .46);
     const roof = new T.Mesh(geometry, paint(style.roof, T.DoubleSide));
     roof.castShadow = roof.receiveShadow = true;
     group.add(roof);

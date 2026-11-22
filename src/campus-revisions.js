@@ -14,7 +14,8 @@ const artsMemorialClassroom = 'w368066317';
 // This store is a separately tagged bay within the reconstructed dining hall.
 const diningHallStore = 'w368104077';
 
-export function applyCampusRevisions(geo) {
+// `extras` (data/campus-extras.json) adds buildings and land that OSM does not tag as such.
+export function applyCampusRevisions(geo, extras = {buildings: [], land: []}) {
   const facultyBuildings = geo.buildings.filter(building=>facultyResidenceBuildingIds.includes(building.osm));
   const residencePoint = facultyBuildings.length && {
     osm: facultyResidenceId,
@@ -46,6 +47,8 @@ export function applyCampusRevisions(geo) {
     buildings: [
       ...geo.buildings.filter(({osm})=>osm!==carbonNeutralityPark && osm!==artsMemorialClassroom && osm!==diningHallStore),
       activityCenterFootprint,
+      ...extras.buildings,
     ],
+    land: [...geo.land, ...extras.land],
   };
 }
