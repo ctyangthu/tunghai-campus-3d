@@ -14,6 +14,41 @@
 
 執行 `npm ci` 和 `npm run build`，然後以支援 WebGL 2 的瀏覽器開啟 `docs/index.html`。GitHub Pages 從 `main` 分支的 `docs/` 發布。
 
+## 資料產生
+
+`npm run build` 只把 `src/` 與三個資料檔打包成 `docs/index.html`。資料檔由 `scripts/` 內的腳本重建，需要 Node.js 22 以上。下載的原始資料暫存在 `.cache/`，不納入版本控制。
+
+| 資料檔 | 指令 | 來源 | 與目前發布版比對 |
+| --- | --- | --- | --- |
+| `data/terrain.json` | `npm run data:terrain` | Mapzen Terrain Tiles，zoom 14，雙線性取樣 | 逐位元相同 |
+| `docs/data/campus-geo.json` | `npm run data:osm` | OpenStreetMap | 校界、315 棟建物、135 塊土地、21 處標籤、樹木皆相同；道路 374 段中 323 段相同 |
+| `data/luce-chapel.json` | `npm run chapel:export`、`npm run chapel:import <檔案>` | 教堂模型，經 glTF 編輯 | 匯出再匯入逐位元相同 |
+
+### 地圖資料（OpenStreetMap）
+
+`npm run data:osm` 先以 `scripts/fetch-osm.mjs` 下載校園周邊資料，再以 `scripts/build-geo.mjs` 產生 `docs/data/campus-geo.json`。下載預設使用 Overpass，並以 `scripts/config.mjs` 的 `osmDate` 固定快照日期；無法連線時改用 OSM API，只能取得當下資料。加上 `--latest` 取用 Overpass 最新資料，或以 `--source=api` 指定 OSM API。
+
+取捨規則集中在 `scripts/geo-rules.mjs`，包括：
+
+- 建物與土地的篩選：中心點須在校界內或距校界 8 公尺（土地為 5 公尺）以內，並排除過小的面積。
+- 建物高度：有 `building:levels` 時每層 3.25 公尺。其餘依地標高度表、建物類型或占地面積估計；第一教學區的低層校舍為 7 公尺。
+- 道路寬度與裁切方式。
+- 地標標籤清單。
+
+道路的原始裁切與簡化步驟沒有留下紀錄，腳本以文件化的規則近似。差異集中在校界外緣的裁切位置與少數校內短步道。取代發布版之前，請先比對：
+
+```sh
+node scripts/fetch-osm.mjs
+node scripts/build-geo.mjs --out=.cache/campus-geo.json
+node scripts/compare-geo.mjs docs/data/campus-geo.json .cache/campus-geo.json --verbose
+```
+
+地圖資料與地形沿用發布時的兩種等距圓柱投影，兩者在場景邊緣相差約 1.5 公尺，說明見 `scripts/lib/projection.mjs`。若透過 HTTPS proxy 連線，Node.js 22.21 以上需設定 `NODE_USE_ENV_PROXY=1`。
+
+### 路思義教堂模型
+
+`data/luce-chapel.json` 依材質分組，儲存 Float32 頂點、法向量與 Uint16 索引。最初產生這些曲面的程式沒有保留，因此這個 JSON 檔就是模型原始檔。編輯時執行 `npm run chapel:export` 匯出 `.cache/luce-chapel.gltf`，在 Blender 等工具修改後匯出 `.gltf` 或 `.glb`，再執行 `npm run chapel:import <檔案>` 寫回。匯入時會合併同材質的網格、套用節點變換，並為缺少法向量的網格補算。
+
 ## 資料來源
 
 - 校園配置與地標名稱參考東海大學。 [校園地圖](https://thupr.thu.edu.tw/traffic.php)
