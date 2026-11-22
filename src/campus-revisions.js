@@ -7,6 +7,8 @@ import {wenliBoulevardId} from './wenli-heritage.js';
 const carbonNeutralityPark = 'r18476872';
 // This room is already included in the footprint of the Arts east wing.
 const artsMemorialClassroom = 'w368066317';
+// This store is a separately tagged bay within the reconstructed dining hall.
+const diningHallStore = 'w368104077';
 
 export function applyCampusRevisions(geo) {
   const facultyBuildings = geo.buildings.filter(building=>facultyResidenceBuildingIds.includes(building.osm));
@@ -22,7 +24,7 @@ export function applyCampusRevisions(geo) {
     ...geo,
     pois,
     buildings: [
-      ...geo.buildings.filter(building=>building.osm!==carbonNeutralityPark && building.osm!==artsMemorialClassroom),
+      ...geo.buildings.filter(({osm})=>osm!==carbonNeutralityPark && osm!==artsMemorialClassroom && osm!==diningHallStore),
       activityCenterFootprint,
     ],
   };

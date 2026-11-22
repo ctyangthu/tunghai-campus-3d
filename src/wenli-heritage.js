@@ -78,7 +78,7 @@ function halfPolygon(points, ridge, side) {
   return half;
 }
 
-function addRoof(group, points, eaves, rise, overhang, infill) {
+export function addGableRoof(group, points, eaves, rise, overhang, infill) {
   const x0=Math.min(...points.map(p=>p.x)), x1=Math.max(...points.map(p=>p.x));
   const z0=Math.min(...points.map(p=>p.y)), z1=Math.max(...points.map(p=>p.y));
   const center = new T.Vector2((x0+x1)/2,(z0+z1)/2);
@@ -107,11 +107,15 @@ function addRoof(group, points, eaves, rise, overhang, infill) {
     }
     if (!infill) continue;
     const footprint = halfPolygon(points,center.y,side);
+    const outward=T.ShapeUtils.area(footprint)<0;
     for (let i=0; i<footprint.length; i++) {
       const a=footprint[i], b=footprint[(i+1)%footprint.length];
       if (Math.max(Math.abs(a.y-center.y),Math.abs(b.y-center.y))<.001) continue;
-      wall.push(a.x,eaves-.02,a.y, b.x,eaves-.02,b.y, b.x,surface(b.y)-.08,b.y,
-                a.x,eaves-.02,a.y, b.x,surface(b.y)-.08,b.y, a.x,surface(a.y)-.08,a.y);
+      const lowA=[a.x,eaves-.02,a.y], lowB=[b.x,eaves-.02,b.y];
+      const highA=[a.x,Math.max(eaves-.02,surface(a.y)-.08),a.y];
+      const highB=[b.x,Math.max(eaves-.02,surface(b.y)-.08),b.y];
+      if (outward) wall.push(...lowA,...lowB,...highB,...lowA,...highB,...highA);
+      else wall.push(...lowA,...highB,...lowB,...lowA,...highA,...highB);
     }
   }
   const roof = new T.BufferGeometry();
@@ -128,7 +132,7 @@ function addRoof(group, points, eaves, rise, overhang, infill) {
     const gable = new T.BufferGeometry();
     gable.setAttribute('position',new T.Float32BufferAttribute(wall,3));
     gable.computeVertexNormals();
-    part(group,gable,brick);
+    part(group,gable,infill===true?brick:infill);
   }
 
   const ridgeXs=halfPolygon(roofOutline,center.y,1).filter(p=>Math.abs(p.y-center.y)<.001).map(p=>p.x);
@@ -219,7 +223,7 @@ export function courtyardWing(item,height,courtyard) {
   const rise=Math.min(2.6,depth*.195);
   const foundation=slab(group,points,lower,floor,stone);
   const walls=passage?null:slab(group,points,floor,eave-.02,brick);
-  const roof=addRoof(group,points,eave,rise,passage?.56:.74,!passage);
+  const roof=addGableRoof(group,points,eave,rise,passage?.56:.74,!passage);
   addFacades(group,points,floor,eave,levels,passage);
   let top=eave+rise;
   if (passage && courtyard.gate) {
@@ -232,7 +236,7 @@ export function courtyardWing(item,height,courtyard) {
     for (const x of [-3.55,3.55]) box(group,x,gateEave/2,1.55,.36,gateEave,4.3,concrete);
     box(group,0,gateEave-.25,3.84,7.55,.55,.46,concrete);
     box(group,0,gateEave-.24,4.082,1.25,.19,.025,timber);
-    addRoof(group,gate,gateEave,1.05,.59,false);
+    addGableRoof(group,gate,gateEave,1.05,.59,false);
     top=Math.max(top,gateEave+1.05);
   }
   const pickables = [roof,walls,foundation].filter(Boolean);

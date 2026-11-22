@@ -18,6 +18,7 @@ const mapButtons=[...root.querySelectorAll('[data-action],[data-view]')];
 const requestedPlace=places.find(p=>p.id===new URLSearchParams(window.location.search).get('place'));
 let selected=places[0];
 let navigate=()=>{};
+const aerialLinks=new Map();
 
 for (const [index,zone] of zones.entries()) {
   const group=document.createElement('optgroup');
@@ -39,6 +40,14 @@ function writeDetails(place) {
   el('.thu-english').textContent=place.english;
   el('.thu-description').textContent=place.description;
   el('.thu-place-source').href=place.source;
+  writeAerialLink(place);
+}
+function writeAerialLink(place) {
+  const link=el('.thu-place-aerial');
+  const href=aerialLinks.get(place.id);
+  link.hidden=!href;
+  if (href) link.href=href;
+  else link.removeAttribute('href');
 }
 function choose(place,move=true){
   writeDetails(place);
@@ -88,6 +97,17 @@ function init({geo:sourceGeo,terrain,chapel}) {
   const {height,board,byId,hits}=makeWorld(scene,geo,terrain,chapel);
 
   const coordinates=new Map([...geo.buildings,...geo.land,...geo.pois].map(f=>[f.osm,f]));
+  const [originLon,originLat]=geo.origin;
+  const metresPerDegreeLon=111320*Math.cos(originLat*Math.PI/180);
+  for (const place of places) {
+    const point=coordinates.get(place.id);
+    if (!place.aerialHeight || !point) continue;
+    const {aerialHeight}=place;
+    const latitude=originLat-(point.z+aerialHeight*Math.tan(39.6*Math.PI/180))/110770;
+    const longitude=originLon+point.x/metresPerDegreeLon;
+    aerialLinks.set(place.id,`https://www.google.com/maps/@${latitude.toFixed(7)},${longitude.toFixed(7)},${aerialHeight}a,35y,39.6t/data=!3m1!1e3`);
+  }
+  writeAerialLink(selected);
   const markers=places.flatMap(place=>{
     const point=coordinates.get(place.id);
     if(!point) return [];
@@ -124,7 +144,7 @@ function init({geo:sourceGeo,terrain,chapel}) {
   let tween=null, frame=0, overview=true, focusActive=false;
   const active=new Map();
   const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId,
-    alumniBellId, wenliBoulevardId, ...newDormIds, ...wenliCourtyards.map(court=>court.id)]);
+    alumniBellId, wenliBoulevardId, ...newDormIds, ...wenliCourtyards.map(court=>court.id), ...aerialLinks.keys()]);
   const closeAngles = {
     w227101621:{az:.72,el:.49},
     [fineArtsId]:{az:1.03,el:.43},
@@ -140,6 +160,20 @@ function init({geo:sourceGeo,terrain,chapel}) {
     w368071571:{az:.34,el:.65},
     w368071585:{az:2.74,el:.65},
     w368304680:{az:2.74,el:.65},
+    w367195923:{az:.95,el:.43},
+    w367196899:{az:1.14,el:.62},
+    w367195941:{az:.20,el:.49},
+    w368066316:{az:1.50,el:.62},
+    w368304652:{az:.40,el:.40},
+    w368304658:{az:.55,el:.59},
+    w227103239:{az:-2.75,el:.38},
+    w227106503:{az:-1.22,el:.54},
+    w227104642:{az:-1.25,el:.47},
+    w1309048743:{az:-1.2,el:.46},
+    w227111396:{az:.36,el:.49},
+    w367193104:{az:1.1,el:.68},
+    w227124380:{az:.14,el:.40},
+    w367762370:{az:.24,el:.55},
     r5467507:{az:.04,el:.94},
     [newDormIds[0]]:{az:2.86,el:.50},
     [newDormIds[1]]:{az:2.86,el:.50},

@@ -5,6 +5,10 @@ import {activityCenterBuilding, activityCenterId} from './activity-center.js';
 import {newDormBuilding, newDormIds} from './new-dorms.js';
 import {facultyResidenceId, facultyResidenceBuilding, facultyResidenceBuildingIds} from './faculty-residence.js';
 import {alumniBellId, alumniBellTower, courtyardWing, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
+import {northernLandmarks} from './northern-landmarks.js';
+import {westAdminLandmarks} from './west-admin.js';
+import {campusSocialLandmarks} from './campus-social.js';
+import {livingLandmarks} from './living-landmarks.js';
 
 const detailedBuildings = new Map([
   [fineArtsId, fineArtsBuilding],
@@ -12,6 +16,10 @@ const detailedBuildings = new Map([
   [activityCenterId, activityCenterBuilding],
   ...newDormIds.map(id=>[id,newDormBuilding]),
   ...facultyResidenceBuildingIds.map(id=>[id,facultyResidenceBuilding]),
+  ...northernLandmarks,
+  ...westAdminLandmarks,
+  ...campusSocialLandmarks,
+  ...livingLandmarks,
   ...wenliCourtyards.flatMap(court=>[...court.wings,court.passage]
     .filter(Boolean).map(id=>[id,(building,height)=>courtyardWing(building,height,court)])),
 ]);
@@ -140,10 +148,9 @@ export function makeWorld(scene, geo, terrain, chapel) {
     }
     const isHist=f.x < -459 && f.x > -902 && f.z > -77 && f.z < 134 && f.height < 14;
     const isFeatured=representatives.has(f.osm);
-    const isLibrary=f.osm==='w367196899';
     const isCourt=f.osm==='w226829984';
     const isFormerArt=f.osm==='w227117506';
-    const h=(isLibrary?15:isCourt?Math.max(17,f.height):isFormerArt?4:f.height || 7)*1.12;
+    const h=(isCourt?Math.max(17,f.height):isFormerArt?4:f.height || 7)*1.12;
     const grade = height(f.x,f.z);
     const low = Math.min(grade,...f.points.map(([x,z])=>height(x,z)));
     const top = Math.max(grade+h,...f.points.map(([x,z])=>height(x,z)+2));
@@ -154,14 +161,6 @@ export function makeWorld(scene, geo, terrain, chapel) {
     b.position.set(f.x,low-.45,f.z);
     b.userData.osm=f.osm;
     const footprint=shapeFor(f);
-    if(isLibrary && !f.holes?.length){
-      const court=new T.Path();
-      const angle=.286,c=Math.cos(angle),s=Math.sin(angle);
-      [[-14,-11],[14,-11],[14,11],[-14,11]].forEach(([x,z],index)=>{
-        court[index?'lineTo':'moveTo'](x*c-z*s,-x*s-z*c);
-      });
-      footprint.holes.push(court);
-    }
     const solid=new T.ExtrudeGeometry(footprint,{depth:top-low+.45,bevelEnabled:false,curveSegments:1});
     solid.rotateX(-Math.PI/2);
     addBuildingPart(b, solid, [roof,facade]);

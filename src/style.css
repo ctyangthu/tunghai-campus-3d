@@ -54,7 +54,8 @@
 #tunghai-campus .thu-english { margin-top: 5px; color: var(--thu-soft); font-size: .75rem; }
 #tunghai-campus .thu-description { margin-top: 12px; font-size: .86rem; line-height: 1.71; }
 #tunghai-campus a { color: inherit; text-underline-offset: 2px; }
-#tunghai-campus .thu-place-source { display: inline-block; color: var(--thu-soft); margin-top: 9px; font-size: .75rem; }
+#tunghai-campus .thu-detail-links { display: flex; flex-wrap: wrap; gap: 4px 14px; margin-top: 9px; }
+#tunghai-campus .thu-detail-links a { color: var(--thu-soft); font-size: .75rem; }
 #tunghai-campus .thu-focus { width: 100%; margin-top: 14px; }
 #tunghai-campus .thu-focus span { margin-left: 3px; }
 #tunghai-campus .thu-sources { margin-top: 12px; color: var(--thu-soft); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font-size: .7rem; }

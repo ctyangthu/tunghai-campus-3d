@@ -1,6 +1,6 @@
 # 東海大學 3D 校園
 
-互動導覽涵蓋臺中東海大學的第一、第二教學區，可旋轉、縮放並選取 34 處地標。
+互動導覽涵蓋臺中東海大學的第一、第二教學區，可旋轉、縮放並選取 44 處地標。
 
 - [開啟 3D 校園](https://ctyangthu.github.io/tunghai-campus-3d/)
 - [近看文理大道](https://ctyangthu.github.io/tunghai-campus-3d/?place=w367700897)
@@ -11,6 +11,10 @@
 - [近看楊瑞祥綜合活動大樓](https://ctyangthu.github.io/tunghai-campus-3d/?place=yang-activity-center)
 - [近看 400 公尺田徑場](https://ctyangthu.github.io/tunghai-campus-3d/?place=r5467507)
 - [近看東海路 136 號教師宿舍](https://ctyangthu.github.io/tunghai-campus-3d/?place=faculty-residence-136)
+- [近看圖書館總館](https://ctyangthu.github.io/tunghai-campus-3d/?place=w367196899)
+- [近看康敦樓](https://ctyangthu.github.io/tunghai-campus-3d/?place=w227124380)
+
+選擇地標後，可在資料卡查看建築特徵。14 處建物另附 Google Maps 鳥瞰連結，可逐棟比對模型和實景。
 
 ## 建置
 
@@ -63,3 +67,7 @@ node scripts/compare-geo.mjs docs/data/campus-geo.json .cache/campus-geo.json --
 - 牧場南側的智慧碳中和園區由開放地景與分散設施組成。導覽已移除園區邊界誤生成的整塊建物量體。 [校方園區介紹](https://sustainable.thu.edu.tw/campus/carbon/)
 - 戶外田徑場的 400 公尺規格和門牌來自場館登錄。東海路 136 號在另一處，三棟教師宿舍沿用 OpenStreetMap 輪廓，樓層依校方配置圖建模，建物高度與外觀為近似。 [全國運動場館資訊網](https://iplay.sports.gov.tw/gyminfo/index/15050) · [教職員宿舍資訊](https://ppms.thu.edu.tw/web/student/detail.php?cid=1&id=8)
 - 校友鐘樓的位置採用 OpenStreetMap 節點 2358488959，名稱與位置對照校方導覽。塔身依照片近似建模。文、理、工與大道西段的教學院落沿用 OpenStreetMap 輪廓，雙坡灰瓦、柱梁與磚牆參考建築研究、文資照片和鳥瞰畫面。 [東海大學文理大道空拍](https://thupr.thu.edu.tw/photos/2211074611.png) · [鐘樓照片](https://commons.wikimedia.org/wiki/File:Bell_tower_-_Tunghai_University_-_DSC01614.JPG) · [臺中市文化資產處](https://www.tchac.taichung.gov.tw/historybuilding?pid=252&uid=37) · [羅時瑋建築專文](https://www.tunghai74.org/yearbook/whitewallsinTunghai.htm)
+- 社會科學院、圖書館總館與中正紀念堂的屋頂和量體以鳥瞰核對，入口與立面參考校方照片。 [Google Maps 北側鳥瞰](https://www.google.com/maps/@24.177724,120.595837,347a,35y,39.6t/data=!3m1!1e3) · [社會科學院](https://sosc.thu.edu.tw/) · [圖書館格局](https://lis.thu.edu.tw/web/building/page.php?lang=zh_tw&scid=21&sid=35) · [中正紀念堂](https://space.thu.edu.tw/detail/AS/AS3)
+- 語文館的平頂中庭、行政大樓與校長室的灰瓦紅磚、宗教中心的琉璃瓦斜牆，分別參考地圖與外觀照。 [臺中市文化資產處早期校園圖照](https://www.tchac.taichung.gov.tw/uploads/tchac/files/202105/5ee76a08-09f2-485d-971c-66f35e46a3f0.pdf) · [宗教中心外觀](https://thupr.thu.edu.tw/photos/22113924419.png)
+- 體育館、銘賢堂、舊郵局（路思義文創咖啡館）、男生宿舍餐廳與花園餐廳的屋頂、立面和露台依照片與鳥瞰近似建模。 [臺中市文化局校園建築介紹](https://www.culture.taichung.gov.tw/2061062/2099383/3337384/3338327/3338335/3346548) · [奧柏林廣場](https://sites.google.com/go.thu.edu.tw/oberlin/%E9%A6%96%E9%A0%81) · [舊郵局修復](https://thupr.thu.edu.tw/newsdetail.php?c=60&id=52874) · [東海大學校園餐廳](https://thueat.thu.edu.tw/web/teacher/list.php?lang=zh_tw)
+- 康敦樓的白牆、灰瓦與陶管漏牆參考校方修復記錄。衛理樓的前後棟、白牆與高低錯落配置參考文化資產圖照。 [康敦樓整修](https://thupr.thu.edu.tw/newsdetail.php?id=53442) · [東海大學衛理會館](https://www.tchac.taichung.gov.tw/historybuilding?pid=211&uid=34)
