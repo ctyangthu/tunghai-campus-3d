@@ -1,8 +1,10 @@
 # 東海大學 3D 校園
 
-互動導覽涵蓋臺中東海大學的第一、第二教學區，可旋轉、縮放並選取 27 處地標。
+互動導覽涵蓋臺中東海大學的第一、第二教學區，可旋轉、縮放並選取 34 處地標。
 
 - [開啟 3D 校園](https://ctyangthu.github.io/tunghai-campus-3d/)
+- [近看文理大道](https://ctyangthu.github.io/tunghai-campus-3d/?place=w367700897)
+- [近看校友鐘樓](https://ctyangthu.github.io/tunghai-campus-3d/?place=n2358488959)
 - [近看美術系館](https://ctyangthu.github.io/tunghai-campus-3d/?place=w367198636)
 - [近看省政研究大樓](https://ctyangthu.github.io/tunghai-campus-3d/?place=w226831045)
 - [近看新建學生宿舍](https://ctyangthu.github.io/tunghai-campus-3d/?place=w1344753003)
@@ -21,7 +23,7 @@
 | 資料檔 | 指令 | 來源 | 與目前發布版比對 |
 | --- | --- | --- | --- |
 | `data/terrain.json` | `npm run data:terrain` | Mapzen Terrain Tiles，zoom 14，雙線性取樣 | 逐位元相同 |
-| `docs/data/campus-geo.json` | `npm run data:osm` | OpenStreetMap | 校界、315 棟建物、135 塊土地、21 處標籤、樹木皆相同；道路 374 段中 323 段相同 |
+| `docs/data/campus-geo.json` | `npm run data:osm` | OpenStreetMap | 校界、315 棟建物、135 塊土地、22 處標籤、樹木皆相同；道路 374 段中 323 段相同 |
 | `data/luce-chapel.json` | `npm run chapel:export`、`npm run chapel:import <檔案>` | 教堂模型，經 glTF 編輯 | 匯出再匯入逐位元相同 |
 
 ### 地圖資料（OpenStreetMap）
@@ -60,3 +62,4 @@ node scripts/compare-geo.mjs docs/data/campus-geo.json .cache/campus-geo.json --
 - 楊瑞祥綜合活動大樓以國土測繪中心 2024 年正射影像的施工基礎定位，並參考校方 2026 年外觀照片近似建模。田徑場跑道色澤依校方照片更新。 [國土測繪中心圖資](https://maps.nlsc.gov.tw/S09SOA/pro/Wmts_ajax_main.jsp) · [校方場館照片](https://thupr.thu.edu.tw/newsdetail.php?c=60&id=53630)
 - 牧場南側的智慧碳中和園區由開放地景與分散設施組成。導覽已移除園區邊界誤生成的整塊建物量體。 [校方園區介紹](https://sustainable.thu.edu.tw/campus/carbon/)
 - 戶外田徑場的 400 公尺規格和門牌來自場館登錄。東海路 136 號在另一處，三棟教師宿舍沿用 OpenStreetMap 輪廓，樓層依校方配置圖建模，建物高度與外觀為近似。 [全國運動場館資訊網](https://iplay.sports.gov.tw/gyminfo/index/15050) · [教職員宿舍資訊](https://ppms.thu.edu.tw/web/student/detail.php?cid=1&id=8)
+- 校友鐘樓的位置採用 OpenStreetMap 節點 2358488959，名稱與位置對照校方導覽。塔身依照片近似建模。文、理、工與大道西段的教學院落沿用 OpenStreetMap 輪廓，雙坡灰瓦、柱梁與磚牆參考建築研究、文資照片和鳥瞰畫面。 [東海大學文理大道空拍](https://thupr.thu.edu.tw/photos/2211074611.png) · [鐘樓照片](https://commons.wikimedia.org/wiki/File:Bell_tower_-_Tunghai_University_-_DSC01614.JPG) · [臺中市文化資產處](https://www.tchac.taichung.gov.tw/historybuilding?pid=252&uid=37) · [羅時瑋建築專文](https://www.tunghai74.org/yearbook/whitewallsinTunghai.htm)

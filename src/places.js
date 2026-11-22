@@ -1,5 +1,6 @@
 const campusMap = 'https://thupr.thu.edu.tw/traffic.php';
 const walks = 'https://fineart.thu.edu.tw/web/visit/page.php?scid=44&sid=72';
+const earlyCampus = 'https://www.tchac.taichung.gov.tw/historybuilding?pid=252&uid=37';
 const park = 'https://thupr.thu.edu.tw/newsdetail.php?c=60&id=53364';
 const newDormSource = 'https://www.twarchitect.org.tw/works/東海大學學生宿舍/';
 export const zones = ['第一教學區', '校園生活與牧場', '第二教學區'];
@@ -7,8 +8,15 @@ export const places = [
   ['w227101621',0,'路思義教堂','Luce Memorial Chapel','四片曲面屋殼沿著採光縫向上收合。這座國定古蹟位在早期校園核心，草坪另一側可見畢律斯鐘樓。','https://chaplain.thu.edu.tw/web/page/page.php?scid=8&sid=29',1,140],
   ['n3714871469',0,'畢律斯鐘樓','Priest Bell Tower','帶有黃色琉璃面磚的狹長牆面圍著開放鐘座，與路思義教堂隔著草坪相望。','https://www.tchac.taichung.gov.tw/building?pid=170&uid=33',0,96],
   ['n5439892666',0,'第一教學區校門','First Teaching Area Entrance','由臺灣大道進入校園，沿約農路的鳳凰樹綠蔭可走往人文大樓與路思義教堂。',walks,1,190],
-  ['w367700897',0,'文理大道','Wenli Boulevard','串連圖書館與早期文、理教學建築。坡道和階梯隨地勢展開，兩旁院落留有樹蔭與步行空間。','https://www.tchac.taichung.gov.tw/historybuilding?pid=252&uid=37',1,265],
-  ['w368071581',0,'文學院','College of Arts','早期教學區以低層院落順應大肚山地勢，走廊連接教室與庭園。','https://www.tchac.taichung.gov.tw/historybuilding?pid=252&uid=37',0,185],
+  ['w367700897',0,'文理大道','Wenli Boulevard','校園的步行主軸串連圖書館、校友鐘樓與兩側院落。文、理、工學院的灰瓦坡屋頂和合院配置，延續到後來興建的校舍。',earlyCampus,1,286],
+  ['n2358488959',0,'校友鐘樓','Alumni Bell Tower','位於文理大道中央的草帶上，兩根混凝土柱以橫梁相連，鐘懸在開放的塔身內。','https://labor.thu.edu.tw/labor-design-detail.php?i=3',0,34],
+  ['w368071581',0,'文學院','College of Arts','早期仿唐式教學建築以低層教室圍出中庭，灰瓦屋頂下可見混凝土廊柱、清水磚牆與木框窗。',earlyCampus,0,83],
+  ['w368249647',0,'理學院','College of Science','灰瓦雙坡屋頂覆蓋教室、研究室和前廊。各翼棟隨地勢排列，中間保留庭院。',walks,0,90],
+  ['w368071586',0,'工學院','College of Engineering','前廊與三面教室、研究室圍合中庭，延續文理大道早期校舍的灰瓦、磚牆與柱梁構造。',walks,0,85],
+  ['w368071570',0,'人文暨科技館','Humanity & Technology Building','文理大道北側的院落式校舍，由日文系及電機系的教室與研究空間圍合。',campusMap,0,90],
+  ['w368071571',0,'創藝學院與通識中心','College of Fine Arts and Creative Design & General Education Center','校友鐘樓西北側的教學院落。灰瓦雙坡屋頂下可見紅磚、水平柱梁與朝向中庭的走廊。',campusMap,0,91],
+  ['w368071585',0,'農學院','College of Agriculture','鄰近文理大道西側，前廊入口朝向大道，研究室和教室沿坡地圍成中庭。','https://agr.thu.edu.tw/',0,98],
+  ['w368304680',0,'法律學院','College of Law','位於農學院西側，系館、教室和實習法庭環繞中庭，延續大道沿線的低層灰瓦坡頂。','https://law.thu.edu.tw/',0,92],
   ['w367196899',0,'圖書館總館','Main Library','座落於文理大道上端。地面四層採回字形配置，中央保留庭院。','https://lis.thu.edu.tw/web/building/page.php?lang=zh_tw&scid=21&sid=35',1,190],
   ['w367195941',0,'中正紀念堂','Chiang Kai-shek Memorial Hall','鄰近圖書館與思恩園，校內典禮與各類展演可在此舉行。','https://space.service.thu.edu.tw/place/activity',0,180],
   ['w227117506',0,'原藝術中心','Former Arts Center','陳其寬設計的市定古蹟。薄殼混凝土屋面以倒傘形態呈現，建築群圍出合院。','https://www.tchac.taichung.gov.tw/building?pid=173&uid=33',0,140],

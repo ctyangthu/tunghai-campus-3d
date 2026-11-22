@@ -4,6 +4,7 @@ import {provincialBuildingId, provincialBuilding} from './provincial-building.js
 import {activityCenterBuilding, activityCenterId} from './activity-center.js';
 import {newDormBuilding, newDormIds} from './new-dorms.js';
 import {facultyResidenceId, facultyResidenceBuilding, facultyResidenceBuildingIds} from './faculty-residence.js';
+import {alumniBellId, alumniBellTower, courtyardWing, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
 
 const detailedBuildings = new Map([
   [fineArtsId, fineArtsBuilding],
@@ -11,6 +12,8 @@ const detailedBuildings = new Map([
   [activityCenterId, activityCenterBuilding],
   ...newDormIds.map(id=>[id,newDormBuilding]),
   ...facultyResidenceBuildingIds.map(id=>[id,facultyResidenceBuilding]),
+  ...wenliCourtyards.flatMap(court=>[...court.wings,court.passage]
+    .filter(Boolean).map(id=>[id,(building,height)=>courtyardWing(building,height,court)])),
 ]);
 
 const decode = (value, ArrayType) => new ArrayType(Uint8Array.from(atob(value), c => c.charCodeAt(0)).buffer);
@@ -265,6 +268,14 @@ export function makeWorld(scene, geo, terrain, chapel) {
     byId.set(tower.osm,b.position.y+6);
   }
 
+  const alumniBell=geo.pois.find(p=>p.osm===alumniBellId);
+  if(alumniBell){
+    const model=alumniBellTower(alumniBell,height);
+    scene.add(model.group);
+    hits.push(...model.pickables);
+    byId.set(alumniBellId,model.top+1.5);
+  }
+
   plantTrees(scene,geo,height,bounds,plantingExclusions);
   return {height,board,byId,hits};
 }
@@ -337,9 +348,40 @@ function groundTexture(geo,bounds,height) {
   const main = new Set(['trunk','trunk_link','primary','secondary','tertiary','primary_link','secondary_link']);
   const foot = new Set(['footway','path','steps','pedestrian','cycleway','corridor']);
   const isMain = road => main.has(road.type) || /臺灣大道|台灣大道/.test(road.name);
-  for (const f of [...geo.roads].sort((a,b)=>Number(isMain(a))-Number(isMain(b)))) {
+  for (const f of [...geo.roads].sort((a,b)=>Number(b.osm===wenliBoulevardId)-Number(a.osm===wenliBoulevardId)
+    || Number(isMain(a))-Number(isMain(b)))) {
     const broad=isMain(f), walk=foot.has(f.type), special=f.name==='文理大道';
     const w = Math.max(walk ? 1.8 : 3.3, f.width)*(broad?1.15:1);
+    if (f.osm===wenliBoulevardId && f.points.length===2) {
+      const [[ax,az],[bx,bz]]=f.points;
+      const length=Math.hypot(bx-ax,bz-az);
+      const nx=(az-bz)/length,nz=(bx-ax)/length;
+      ctx.beginPath();
+      path(f.points);
+      ctx.lineWidth=12;
+      ctx.strokeStyle='#a9be81';
+      ctx.stroke();
+      ctx.strokeStyle='#c8bd9e';
+      ctx.lineWidth=2.9;
+      for (const offset of [-4.15,4.15]) {
+        ctx.beginPath();
+        path(f.points.map(([x,z])=>[x+nx*offset,z+nz*offset]));
+        ctx.stroke();
+      }
+      ctx.save();
+      ctx.lineCap='butt';
+      ctx.lineWidth=.31;
+      ctx.strokeStyle='#a9a17f';
+      ctx.beginPath();
+      for (let d=3.9; d<length; d+=3.9) {
+        const x=ax+(bx-ax)*d/length,z=az+(bz-az)*d/length;
+        ctx.moveTo(x-nx*2.72,z-nz*2.72);
+        ctx.lineTo(x+nx*2.72,z+nz*2.72);
+      }
+      ctx.stroke();
+      ctx.restore();
+      continue;
+    }
     ctx.beginPath();path(f.points);
     if (!walk || special) {
       ctx.strokeStyle=broad?'#9a9f8c':'#aeac8d';
@@ -389,7 +431,8 @@ function plantTrees(scene,geo,height,bounds,plantingExclusions) {
   for (const road of roads) for(let i=1;i<road.points.length;i++){
     const [x,z]=road.points[i-1], [x2,z2]=road.points[i], sx=x2-x,sz=z2-z;
     const count=Math.ceil(Math.hypot(sx,sz)/5);
-    for(let j=0;j<=count;j++){const t=j/Math.max(count,1);roadPoints.push([x+sx*t,z+sz*t,road.width/2+2.2]);}
+    const clearance=road.osm===wenliBoulevardId?6.3:road.width/2+2.2;
+    for(let j=0;j<=count;j++){const t=j/Math.max(count,1);roadPoints.push([x+sx*t,z+sz*t,clearance]);}
   }
   const cells=new Map();
   for (const p of roadPoints){

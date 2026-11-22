@@ -7,6 +7,7 @@ import {activityCenterId} from './activity-center.js';
 import {newDormIds} from './new-dorms.js';
 import {applyCampusRevisions} from './campus-revisions.js';
 import {facultyResidenceId} from './faculty-residence.js';
+import {alumniBellId, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
 
 const root=document.getElementById('tunghai-campus');
 const el=selector=>root.querySelector(selector);
@@ -122,13 +123,23 @@ function init({geo:sourceGeo,terrain,chapel}) {
   let state={x:board.x,y:76,z:board.z,az:orbit.az,el:orbit.el,size:1};
   let tween=null, frame=0, overview=true, focusActive=false;
   const active=new Map();
-  const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId, ...newDormIds]);
+  const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId,
+    alumniBellId, wenliBoulevardId, ...newDormIds, ...wenliCourtyards.map(court=>court.id)]);
   const closeAngles = {
     w227101621:{az:.72,el:.49},
     [fineArtsId]:{az:1.03,el:.43},
     [provincialBuildingId]:{az:2.49,el:.48},
     [activityCenterId]:{az:2.76,el:.48},
     [facultyResidenceId]:{az:.14,el:.47},
+    [alumniBellId]:{az:1.13,el:.34},
+    [wenliBoulevardId]:{az:.03,el:.94},
+    w368071581:{az:.34,el:.60},
+    w368249647:{az:-.84,el:.74},
+    w368071586:{az:2.62,el:.71},
+    w368071570:{az:.34,el:.65},
+    w368071571:{az:.34,el:.65},
+    w368071585:{az:2.74,el:.65},
+    w368304680:{az:2.74,el:.65},
     r5467507:{az:.04,el:.94},
     [newDormIds[0]]:{az:2.86,el:.50},
     [newDormIds[1]]:{az:2.86,el:.50},

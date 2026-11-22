@@ -1,9 +1,12 @@
 import {activityCenterFootprint} from './activity-center.js';
 import {facultyResidenceId, facultyResidenceBuildingIds} from './faculty-residence.js';
+import {wenliBoulevardId} from './wenli-heritage.js';
 
 // The OSM relation is a campus park boundary enclosing separated facilities.
 // The source layer remains available for download under the ODbL.
 const carbonNeutralityPark = 'r18476872';
+// This room is already included in the footprint of the Arts east wing.
+const artsMemorialClassroom = 'w368066317';
 
 export function applyCampusRevisions(geo) {
   const facultyBuildings = geo.buildings.filter(building=>facultyResidenceBuildingIds.includes(building.osm));
@@ -12,11 +15,14 @@ export function applyCampusRevisions(geo) {
     x: facultyBuildings.reduce((sum,b)=>sum+b.x,0)/facultyBuildings.length,
     z: facultyBuildings.reduce((sum,b)=>sum+b.z,0)/facultyBuildings.length,
   };
+  const pois = geo.pois.map(point=>point.osm===wenliBoulevardId
+    ? {...point,x:-703,z:-26} : point);
+  if (residencePoint) pois.push(residencePoint);
   return {
     ...geo,
-    pois: residencePoint ? [...geo.pois,residencePoint] : geo.pois,
+    pois,
     buildings: [
-      ...geo.buildings.filter(building=>building.osm!==carbonNeutralityPark),
+      ...geo.buildings.filter(building=>building.osm!==carbonNeutralityPark && building.osm!==artsMemorialClassroom),
       activityCenterFootprint,
     ],
   };
