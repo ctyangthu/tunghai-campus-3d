@@ -68,7 +68,7 @@ export const places = [
   ['w227075021',1,48,'綠之心・乳品小棧','Green Heart','綠之心設有東海乳品小棧與環境教育館，位在教學區與牧場之間，是校園散步和品嚐東海乳品的停留點。','https://thucwc.thu.edu.tw/store/',1,165],
   ['w227075006',1,49,'教職員休閒中心','Faculty & Staff Activity Center','位於教職員宿舍區東側，東海路 136 號宿舍附近。',campusMap,0,75],
   ['w109505205',1,50,'東海湖','Tunghai Lake','鄰近農牧場與第二教學區的湖泊。沿著湖畔可往小王子玫瑰園。','https://thupr.thu.edu.tw/newsdetail.php?c=60&id=53463',1,275],
-  ['w226831394',1,51,'第二教學區餐廳','Second Teaching Area Dining Hall','第二教學區學生宿舍旁的學生餐廳。',campusMap,0,80],
+  ['w226831394',1,51,'梨子咖啡館','Pear Cafe, Tunghai Forest','梨子咖啡館東海森林店，設於原第二教學區餐廳（校園地圖 51），2024 年 5 月開幕。室內以天空樹意象與綠色為主調，鄰近東海棒球場與第二教學區學生宿舍。','https://supertaste.tvbs.com.tw/infocard/31679',0,80],
   ['w1012133728',1,52,'第二教學區運動場','Second Teaching Area Sports Venue','第二教學區南側的運動場，設有棒球場。',campusMap,0,180],
 
   // 附屬學校區 Affiliated School Area
