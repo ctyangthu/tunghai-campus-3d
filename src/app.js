@@ -1,5 +1,5 @@
 import * as T from 'three';
-import {places,zones} from './places.js';
+import {defaultPlaceId,places,zones} from './places.js';
 import {makeWorld} from './scene.js';
 import {fineArtsId} from './fine-arts.js';
 import {provincialBuildingId} from './provincial-building.js';
@@ -9,7 +9,8 @@ import {applyCampusRevisions} from './campus-revisions.js';
 import {facultyResidenceId} from './faculty-residence.js';
 import {mainGateId, secondGateId} from './gates.js';
 import {technologyBuildingId} from './technology-building.js';
-import {administrationBuildingId} from './west-admin.js';
+import {administrationCenterId} from './west-admin.js';
+import {carbonParkId} from './carbon-park.js';
 import {alumniBellId, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
 
 const root=document.getElementById('tunghai-campus');
@@ -24,7 +25,8 @@ const requestedView=(()=>{
   const values=(query.get('view')||'').split(',').map(Number);
   return values.length>=3&&values.every(Number.isFinite)?values:null;
 })();
-let selected=places[0];
+const defaultPlace=places.find(p=>p.id===defaultPlaceId)||places[0];
+let selected=defaultPlace;
 let navigate=()=>{};
 const aerialLinks=new Map();
 
@@ -34,7 +36,7 @@ for (const [index,zone] of zones.entries()) {
   for(const p of places.filter(p=>p.zone===index)){
     const item=document.createElement('option');
     item.value=p.id;
-    item.textContent=p.name;
+    item.textContent=p.number?`${p.number}　${p.name}`:p.name;
     group.append(item);
   }
   select.append(group);
@@ -43,7 +45,7 @@ for (const [index,zone] of zones.entries()) {
 function writeDetails(place) {
   selected=place;
   select.value=place.id;
-  el('.thu-area').textContent=zones[place.zone];
+  el('.thu-area').textContent=place.number?`${zones[place.zone]} · 校園地圖 ${place.number}`:zones[place.zone];
   el('.thu-place').textContent=place.name;
   el('.thu-english').textContent=place.english;
   el('.thu-description').textContent=place.description;
@@ -65,7 +67,7 @@ function choose(place,move=true){
   }
 }
 select.addEventListener('change',()=>choose(places.find(p=>p.id===select.value)));
-writeDetails(requestedPlace||places.find(p=>p.id===window.openai?.widgetState?.privateContent?.selected)||places[0]);
+writeDetails(requestedPlace||places.find(p=>p.id===window.openai?.widgetState?.privateContent?.selected)||defaultPlace);
 window.addEventListener('openai:set_globals',event=>{
   const saved=event.detail?.globals?.widgetState?.privateContent?.selected;
   const previous=places.find(p=>p.id===saved);
@@ -153,11 +155,12 @@ function init({geo:sourceGeo,terrain,chapel}) {
   const active=new Map();
   const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId,
     alumniBellId, wenliBoulevardId, ...newDormIds, ...wenliCourtyards.map(court=>court.id), ...aerialLinks.keys(),
-    mainGateId, secondGateId, technologyBuildingId, administrationBuildingId]);
+    mainGateId, secondGateId, technologyBuildingId, administrationCenterId, carbonParkId]);
   const closeAngles = {
     [mainGateId]:{az:2.72,el:.46},
     [technologyBuildingId]:{az:-1.35,el:.45},
-    [administrationBuildingId]:{az:.45,el:.55},
+    [administrationCenterId]:{az:.45,el:.55},
+    [carbonParkId]:{az:2.6,el:.6},
     [secondGateId]:{az:2.62,el:.5},
     w227101621:{az:.72,el:.49},
     [fineArtsId]:{az:1.03,el:.43},

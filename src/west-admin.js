@@ -5,10 +5,11 @@ const languageId = 'w368066316';
 const presidentId = 'w368304652';
 const religionId = 'w227103239';
 
-// 行政大樓 is the complex opposite 校長室 that houses 總務處, 學生事務處, 教務處, 會計室 and
-// 勞作教育處. OpenStreetMap maps its five wings separately (and names the lawn of the
-// 校長室 courtyard 行政大樓); here the wings share one landmark and select together.
-export const administrationBuildingId = 'administration-building';
+// 行政中心 (campus map no. 13) is the complex opposite 行政大樓 (no. 12, the 校長室
+// building) that houses 教務處, 學務處, 總務處, 勞作教育處, 軍訓室 and 會計室.
+// OpenStreetMap maps its five wings separately (and names the lawn of the 校長室
+// courtyard 行政大樓); here the wings share one landmark and select together.
+export const administrationCenterId = 'administration-center';
 export const administrationWings = ['w368283835', 'w368283836', 'w368283837', 'w368283838', 'w368283840'];
 
 const material = (color, options={}) => new T.MeshLambertMaterial({color,...options});
@@ -330,9 +331,9 @@ function christianCenter(item,height) {
   return finish(group,religionId,high+.45,[base,core,moonGate,innerGlazing,...siding]);
 }
 
-// 秘書室, 公共關係室 and 人事室 close the lawn courtyard of 校長室 and select it.
+// 秘書室, 公共關係室 and 人事室 close the lawn courtyard of 行政大樓 and select it.
 const presidentWing = (item,height)=>courtyardWing(item,height,{id:presidentId,levels:1});
-const administrationWing = (item,height)=>courtyardWing(item,height,{id:administrationBuildingId,levels:1});
+const administrationWing = (item,height)=>courtyardWing(item,height,{id:administrationCenterId,levels:1});
 
 export const westAdminLandmarks = new Map([
   ...['w129849166','w129849225','w368304687','w368304689'].map(id=>[id,languageBuilding]),

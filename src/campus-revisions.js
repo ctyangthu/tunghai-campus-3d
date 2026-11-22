@@ -1,7 +1,9 @@
 import {activityCenterFootprint} from './activity-center.js';
 import {facultyResidenceId, facultyResidenceBuildingIds} from './faculty-residence.js';
 import {secondGatePoint} from './gates.js';
-import {administrationBuildingId, administrationWings} from './west-admin.js';
+import {administrationCenterId, administrationWings} from './west-admin.js';
+import {placePoints, places} from './places.js';
+import {carbonParkPoint} from './carbon-park.js';
 import {wenliBoulevardId} from './wenli-heritage.js';
 
 // The OSM relation is a campus park boundary enclosing separated facilities.
@@ -19,10 +21,10 @@ export function applyCampusRevisions(geo) {
     x: facultyBuildings.reduce((sum,b)=>sum+b.x,0)/facultyBuildings.length,
     z: facultyBuildings.reduce((sum,b)=>sum+b.z,0)/facultyBuildings.length,
   };
-  // 行政大樓 is mapped as five wings; its label sits at their centre.
+  // 行政中心 is mapped as five wings; its label sits at their centre.
   const wings = geo.buildings.filter(building=>administrationWings.includes(building.osm));
   const administrationPoint = wings.length && {
-    osm: administrationBuildingId,
+    osm: administrationCenterId,
     x: wings.reduce((sum,b)=>sum+b.x,0)/wings.length,
     z: wings.reduce((sum,b)=>sum+b.z,0)/wings.length,
   };
@@ -30,7 +32,14 @@ export function applyCampusRevisions(geo) {
     ? {...point,x:-703,z:-26} : point);
   if (residencePoint) pois.push(residencePoint);
   if (administrationPoint) pois.push(administrationPoint);
-  pois.push(secondGatePoint);
+  pois.push(secondGatePoint, carbonParkPoint, ...placePoints);
+  // Every listed building is a representative point, so it can be clicked and labelled.
+  const known = new Set(pois.map(point=>point.osm));
+  for (const building of geo.buildings) {
+    if (!known.has(building.osm) && places.some(place=>place.id===building.osm)) {
+      pois.push({osm:building.osm,x:building.x,z:building.z});
+    }
+  }
   return {
     ...geo,
     pois,

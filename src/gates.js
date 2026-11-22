@@ -6,8 +6,10 @@ import {paint, textPanel} from './kit.js';
 // 第一教學區校門 (約農路): widened in 2024 (總務處 notice: 7/2–8/31) to two car lanes and
 // a motorcycle lane in each direction around a central island with the guard booth,
 // licence-plate barrier arms and a pay machine. The layout follows the NLSC 2024
-// orthophoto. At the front-left of the gate, seen from the boulevard, stands the
-// 15 m white tower with the university name set into the top of its east and west
+// orthophoto. On the right of the gate as seen from the boulevard (its west corner,
+// where the 2024 orthophoto shows it beside the zebra crossing; the school's campus
+// map draws it there too) stands the 15 m white tower with the university name set
+// into the top of its east and west
 // faces (東海大學校史). Tower proportions are approximate.
 //
 // 第二教學區校門 (力行路): two lanes each way without an island, with barrier arms and
@@ -148,13 +150,14 @@ function mainGate(ground) {
   // two lanes plus a motorcycle lane outbound (east), narrowing into 約農路.
   const apron = [[-14, edge(-14) - 1], [16, edge(16) - 1], [16, 12], [10.6, 17], [10.6, 30], [4.2, 40], [4.2, 46],
     [-4.2, 46], [-4.4, 38], [-7.2, 27], [-7.2, 19], [-10.4, 17], [-14, 14]];
-  const tower = {u: 19, v: 1.2};
+  const tower = {u: -22, v: 4.4};
   const zebra = (u, w) => [[u, edge(u) + .2], [u + w, edge(u + w) + .2], [u + w, edge(u + w) + 3.6], [u, edge(u) + 3.6]];
-  group.add(decal(at, ground, [-16, 24], [-9, 47], ctx => {
+  group.add(decal(at, ground, [-27, 20], [-9, 47], ctx => {
     polygon(ctx, [[16, 12], [18.6, 12], [18.6, 31], [10.6, 31], [10.6, 17]], '#cfc8b6'); // east sidewalk
-    polygon(ctx, [[tower.u - 3.4, -2.4], [tower.u + 3.4, -2.4], [tower.u + 3.4, 4.6], [tower.u - 3.4, 4.6]], '#b9825f');
-    for (let i = -3.4; i <= 3.4; i += .6) line(ctx, [tower.u + i, -2.4], [tower.u + i, 4.6], '#a06a4c', .05);
-    for (let j = -2.4; j <= 4.6; j += .6) line(ctx, [tower.u - 3.4, j], [tower.u + 3.4, j], '#a06a4c', .05);
+    const [p0, p1] = [tower.v - 3.4, tower.v + 3.6];
+    polygon(ctx, [[tower.u - 3.6, p0], [tower.u + 3.6, p0], [tower.u + 3.6, p1], [tower.u - 3.6, p1]], '#b9825f');
+    for (let i = -3.6; i <= 3.6; i += .6) line(ctx, [tower.u + i, p0], [tower.u + i, p1], '#a06a4c', .05);
+    for (let j = p0; j <= p1; j += .6) line(ctx, [tower.u - 3.6, j], [tower.u + 3.6, j], '#a06a4c', .05);
     polygon(ctx, apron, '#5f6463');
     for (let u = -13.6; u < 15.6; u += .9) polygon(ctx, zebra(u, .45), '#ecebe3');
     // Inbound (west, southbound) and outbound (east, northbound) lane lines.
@@ -206,7 +209,7 @@ function mainGate(ground) {
   parts.add(paint('#7fb0c8'), 1.95, 18.86, 1.05, .38, .3, .04);
   for (let v = 18; v < 30; v += 4.2) parts.add(paint('#8a8f86'), 11.1, v, .25, .5, .5, 3.6);
 
-  // The white name tower at the front-left of the gate, on its brick plaza.
+  // The white name tower at the gate's west corner, on its brick plaza.
   const [tx, tz] = at(tower.u, tower.v);
   const grade = ground(tx, tz);
   const towerParts = boxes((u, v) => at(tower.u + u, tower.v + v), ground, yaw, grade);
@@ -232,7 +235,7 @@ function mainGate(ground) {
       pickables.push(object);
     }
   });
-  const plaza = [[tower.u - 4, -3], [tower.u + 4, -3], [tower.u + 4, 5], [tower.u - 4, 5]];
+  const plaza = [[tower.u - 4, tower.v - 4], [tower.u + 4, tower.v - 4], [tower.u + 4, tower.v + 4], [tower.u - 4, tower.v + 4]];
   return {group, pickables, top: grade + 15.1, exclusions: [apron, plaza].map(ring => ring.map(([u, v]) => at(u, v)))};
 }
 
