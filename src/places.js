@@ -116,7 +116,7 @@ export const places = [
   ['w227117506',5,null,'原藝術中心','Former Arts Center','陳其寬設計的市定古蹟。薄殼混凝土屋面以倒傘形態呈現，建築群圍出合院。','https://www.tchac.taichung.gov.tw/building?pid=173&uid=33',0,140],
   ['w341450780',5,null,'相思林','Acacia Woods','校園西側的林地，林間步道銜接東海別墅與第一教學區。',walks,0,260],
   ['w227124385',5,null,'陽光草坪','Sunshine Lawn','鄰近女生宿舍，在銘賢堂往乳品小棧的藝文散步路線上。',walks,0,195],
-  ['w1507803521',5,null,'小王子玫瑰園','The Little Prince Rose Garden','東海湖旁的園地有兩座玫瑰造型花圃，於 2025 年校慶揭幕。',park,0,175],
+  ['w1507803521',5,null,'小王子玫瑰園','The Little Prince Rose Garden','東海大學與古典玫瑰園合作的玫瑰園，2025 年校慶揭幕。兩朵玫瑰造型的花圃以碎石步道盤旋到花心，旁有葉片造型的銀綠色花圃，南、西兩側圍著綠籬。',park,0,105],
 ].map(([id,zone,number,name,english,description,source,featured,width,aerialHeight]) =>
   ({id,zone,number,name,english,description,source,featured,width,aerialHeight}));
 

@@ -11,6 +11,7 @@ import {mainGateId, secondGateId} from './gates.js';
 import {technologyBuildingId} from './technology-building.js';
 import {administrationCenterId} from './west-admin.js';
 import {carbonParkId} from './carbon-park.js';
+import {roseGardenId} from './rose-garden.js';
 import {alumniBellId, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
 
 const root=document.getElementById('tunghai-campus');
@@ -155,8 +156,10 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
   const active=new Map();
   const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId,
     alumniBellId, wenliBoulevardId, ...newDormIds, ...wenliCourtyards.map(court=>court.id), ...aerialLinks.keys(),
-    mainGateId, secondGateId, technologyBuildingId, administrationCenterId, carbonParkId]);
+    mainGateId, secondGateId, technologyBuildingId, administrationCenterId, carbonParkId, roseGardenId]);
   const closeAngles = {
+    // Seen from the north-west, as in the garden's published aerial photograph.
+    [roseGardenId]:{az:4.0,el:.62},
     [mainGateId]:{az:2.72,el:.46},
     [technologyBuildingId]:{az:-1.35,el:.45},
     [administrationCenterId]:{az:.45,el:.55},

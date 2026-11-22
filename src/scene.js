@@ -10,6 +10,7 @@ import {createBoxBatch} from './kit.js';
 import {technologyBuilding, technologyBuildingId} from './technology-building.js';
 import {addGates} from './gates.js';
 import {addCarbonPark, carbonParkId} from './carbon-park.js';
+import {addRoseGarden, roseGardenId} from './rose-garden.js';
 import {placeAliases} from './places.js';
 import {alumniBellId, alumniBellTower, courtyardWing, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
 import {northernLandmarks} from './northern-landmarks.js';
@@ -318,6 +319,10 @@ export function makeWorld(scene, geo, terrain, chapel, roofColors = {}) {
   hits.push(...carbonPark.pickables);
   plantingExclusions.push(...carbonPark.exclusions);
   byId.set(carbonParkId, carbonPark.top + 2.5);
+  const roseGarden = addRoseGarden(scene, surface, geo.land.find(f => f.osm === roseGardenId)?.points);
+  hits.push(...roseGarden.pickables);
+  plantingExclusions.push(...roseGarden.exclusions);
+  byId.set(roseGardenId, roseGarden.top + 2.5);
 
   const alumniBell=geo.pois.find(p=>p.osm===alumniBellId);
   if(alumniBell){
@@ -456,19 +461,6 @@ function groundTexture(geo,bounds,height) {
     if (broad && w>7) {
       ctx.strokeStyle='#f3ebce';
       ctx.lineWidth=.7;ctx.setLineDash([5,6]);ctx.stroke();ctx.setLineDash([]);
-    }
-  }
-  const rose=geo.land.find(f=>f.osm==='w1507803521');
-  if(rose){
-    for(const [cx,cz] of [[rose.x-13,rose.z+3],[rose.x+10,rose.z-5]]){
-      const petals = [];
-      for(let i=0;i<=96;i++){
-        const a=i*Math.PI/48,r=7.4+Math.sin(a*5)*1.8;
-        petals.push([cx+r*Math.cos(a),cz+r*Math.sin(a)]);
-      }
-      area(petals,'#cb8b84');
-      ctx.beginPath();path(petals,true);ctx.strokeStyle='#e1c69d';ctx.lineWidth=1.6;ctx.stroke();
-      ctx.beginPath();ctx.arc(cx,cz,3.2,0,Math.PI*2);ctx.fillStyle='#9e6260';ctx.fill();
     }
   }
   const texture=new T.CanvasTexture(canvas);

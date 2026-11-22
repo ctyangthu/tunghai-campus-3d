@@ -111,7 +111,7 @@ function hipRoof(box, eave, overhang, pitch) {
 }
 
 // Moves each vertex so every edge shifts `distance` metres outward (negative: inward).
-function offsetRing(ring, winding, distance) {
+export function offsetRing(ring, winding, distance) {
   const normals = ring.map(([x, z], i) => {
     const [nx, nz] = ring[(i + 1) % ring.length];
     const length = Math.hypot(nx - x, nz - z) || 1;
