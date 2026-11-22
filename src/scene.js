@@ -3,12 +3,14 @@ import {fineArtsId, fineArtsBuilding} from './fine-arts.js';
 import {provincialBuildingId, provincialBuilding} from './provincial-building.js';
 import {activityCenterBuilding, activityCenterId} from './activity-center.js';
 import {newDormBuilding, newDormIds} from './new-dorms.js';
+import {facultyResidenceId, facultyResidenceBuilding, facultyResidenceBuildingIds} from './faculty-residence.js';
 
 const detailedBuildings = new Map([
   [fineArtsId, fineArtsBuilding],
   [provincialBuildingId, provincialBuilding],
   [activityCenterId, activityCenterBuilding],
   ...newDormIds.map(id=>[id,newDormBuilding]),
+  ...facultyResidenceBuildingIds.map(id=>[id,facultyResidenceBuilding]),
 ]);
 
 const decode = (value, ArrayType) => new ArrayType(Uint8Array.from(atob(value), c => c.charCodeAt(0)).buffer);
@@ -96,7 +98,8 @@ export function makeWorld(scene, geo, terrain, chapel) {
   const buildings = new T.Group();
   const byId = new Map();
   const hits = [];
-  const plantingExclusions = [];
+  const outdoorTrack = geo.land.find(area=>area.osm==='r5467507');
+  const plantingExclusions = outdoorTrack ? [outdoorTrack.points] : [];
   const representatives = new Set(geo.pois.map(p => p.osm));
   const traditional = ['#738078','#66766e','#82867b','#707871'];
   const modern = ['#d1c4ac','#c5beb0','#e6d9ba','#ded6be','#bcb8a8'];
@@ -127,6 +130,9 @@ export function makeWorld(scene, geo, terrain, chapel) {
       hits.push(...refined.pickables);
       if (refined.plantingExclusion) plantingExclusions.push(refined.plantingExclusion);
       byId.set(f.osm, refined.top + 2.5);
+      if (facultyResidenceBuildingIds.includes(f.osm)) {
+        byId.set(facultyResidenceId, Math.max(byId.get(facultyResidenceId) ?? -Infinity, refined.top+2.0));
+      }
       continue;
     }
     const isHist=f.x < -459 && f.x > -902 && f.z > -77 && f.z < 134 && f.height < 14;

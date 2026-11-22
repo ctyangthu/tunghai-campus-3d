@@ -6,6 +6,7 @@ import {provincialBuildingId} from './provincial-building.js';
 import {activityCenterId} from './activity-center.js';
 import {newDormIds} from './new-dorms.js';
 import {applyCampusRevisions} from './campus-revisions.js';
+import {facultyResidenceId} from './faculty-residence.js';
 
 const root=document.getElementById('tunghai-campus');
 const el=selector=>root.querySelector(selector);
@@ -121,12 +122,14 @@ function init({geo:sourceGeo,terrain,chapel}) {
   let state={x:board.x,y:76,z:board.z,az:orbit.az,el:orbit.el,size:1};
   let tween=null, frame=0, overview=true, focusActive=false;
   const active=new Map();
-  const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, ...newDormIds]);
+  const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId, ...newDormIds]);
   const closeAngles = {
     w227101621:{az:.72,el:.49},
     [fineArtsId]:{az:1.03,el:.43},
     [provincialBuildingId]:{az:2.49,el:.48},
     [activityCenterId]:{az:2.76,el:.48},
+    [facultyResidenceId]:{az:.14,el:.47},
+    r5467507:{az:.04,el:.94},
     [newDormIds[0]]:{az:2.86,el:.50},
     [newDormIds[1]]:{az:2.86,el:.50},
   };
@@ -184,7 +187,7 @@ function init({geo:sourceGeo,terrain,chapel}) {
       }
     }
     const point=coordinates.get(selected.id);
-    ring.visible=focusActive&&Boolean(point)&&!detailedLandmarks.has(selected.id);
+    ring.visible=focusActive&&Boolean(point)&&!detailedLandmarks.has(selected.id)&&selected.id!=='r5467507';
     if(ring.visible){
       const radius=selected.id==='w227101621'?17:Math.min(44,Math.max(6,selected.width*.088));
       ring.position.set(point.x,height(point.x,point.z)+1.2,point.z);
