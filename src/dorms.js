@@ -1,11 +1,21 @@
 import * as T from 'three';
+import {paint} from './kit.js';
 
-// Student dormitories. Exteriors follow the NLSC 2024 orthophoto (roof colour, ridge
+// Low-rise and dormitory buildings drawn in a few campus styles.
+//
+// Student dormitories: exteriors follow the NLSC 2024 orthophoto (roof colour, ridge
 // lines, rooftop solar arrays) and published photographs: the early men's dorms are
 // exposed red brick under grey tiled hipped roofs with deep eaves; the women's dorms
 // are white plaster with dark timber balcony corridors under grey tiled roofs; the
 // later mid- and high-rise blocks have pale render, ribbon windows and flat roofs.
 // Floor counts use OpenStreetMap building:levels where tagged, otherwise FLOORS below.
+//
+// 行政大樓: the administration complex opposite 校長室, housing 總務處, 學生事務處, 教務處,
+// 會計室 and 勞作教育處. OpenStreetMap maps its wings as separate buildings. Like the
+// early administration buildings in the heritage photographs, it has white walls in a
+// dark timber frame under grey tiled hipped roofs.
+export const administrationId = 'administration-building';
+export const administrationWings = ['w368283835', 'w368283836', 'w368283837', 'w368283838', 'w368283840'];
 
 // 宿舍32、33棟 have their own detailed model (new-dorms.js).
 const SEPARATE = new Set(['w1344753003', 'w1344753007']);
@@ -28,6 +38,10 @@ const STYLES = {
     wall: '#efede6', band: '#d6d2c6', roof: '#5a605d', glass: '#3f4b4d', frame: '#8a8f8b',
     floorHeight: 3.2, roofType: 'hip',
   },
+  timber: {
+    wall: '#efebe0', band: '#4b3a2c', roof: '#5a605d', glass: '#3a4547', frame: '#4b3a2c',
+    floorHeight: 3.4, roofType: 'hip', posts: true,
+  },
   modern: {
     wall: '#e4e1d7', band: '#c8c4b7', roof: '#9fa49f', glass: '#55666b', frame: '#7c8481',
     floorHeight: 3.1, roofType: 'flat',
@@ -36,8 +50,9 @@ const STYLES = {
 
 const NAME = /^(男生|女生)?宿舍(\d+)棟/;
 
-// Returns {style, floors, solar} for a student dormitory footprint, or null.
-export function dormSpec(building) {
+// Returns {style, floors, solar, place} for a styled building footprint, or null.
+export function styledBuildingSpec(building) {
+  if (administrationWings.includes(building.osm)) return {style: 'timber', floors: 2, place: administrationId};
   if (SEPARATE.has(building.osm)) return null;
   const match = building.name.match(NAME);
   if (!match) return null;
@@ -80,41 +95,6 @@ function orientedBox(points) {
     best.half.reverse();
   }
   return best;
-}
-
-// Collects box instances per material so each material is one draw call.
-export function createDormBatch() {
-  const batches = new Map();
-  return {
-    add(material, x, y, z, width, height, depth, yaw = 0) {
-      if (!batches.has(material)) batches.set(material, []);
-      batches.get(material).push([x, y, z, width, height, depth, yaw]);
-    },
-    flush(parent) {
-      const unit = new T.BoxGeometry(1, 1, 1);
-      const dummy = new T.Object3D();
-      for (const [material, list] of batches) {
-        const mesh = new T.InstancedMesh(unit, material, list.length);
-        mesh.receiveShadow = true;
-        list.forEach(([x, y, z, width, height, depth, yaw], i) => {
-          dummy.position.set(x, y, z);
-          dummy.rotation.set(0, yaw, 0);
-          dummy.scale.set(width, height, depth);
-          dummy.updateMatrix();
-          mesh.setMatrixAt(i, dummy.matrix);
-        });
-        parent.add(mesh);
-      }
-      batches.clear();
-    },
-  };
-}
-
-const materials = new Map();
-function paint(color, side = T.FrontSide) {
-  const key = color + side;
-  if (!materials.has(key)) materials.set(key, new T.MeshLambertMaterial({color, side}));
-  return materials.get(key);
 }
 
 function hipRoof(box, eave, overhang, pitch) {
@@ -166,7 +146,7 @@ function edgeRoof(ring, winding, eave, overhang, inset, rise) {
   return geometry;
 }
 
-export function dormBuilding(footprint, terrainHeight, spec, batch) {
+export function styledBuilding(footprint, terrainHeight, spec, batch) {
   const style = STYLES[spec.style];
   const grade = terrainHeight(footprint.x, footprint.z);
   const low = Math.min(grade, ...footprint.points.map(([x, z]) => terrainHeight(x, z)));
@@ -226,6 +206,10 @@ export function dormBuilding(footprint, terrainHeight, spec, batch) {
         on(along, y, .04, width + .22, 1.62, .1, frame);
         on(along, y, .09, width, 1.42, .08, glass);
       }
+    }
+    if (style.posts) {
+      // Exposed timber frame: a post between every bay, full height.
+      for (let bay = 0; bay <= bays; bay++) on(bay * span, eave / 2, .1, .24, eave, .16, band);
     }
     if (edge === balconyEdge) {
       for (let floor = 1; floor < spec.floors; floor++) {

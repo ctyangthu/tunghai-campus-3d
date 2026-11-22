@@ -4,11 +4,16 @@ import {provincialBuildingId, provincialBuilding} from './provincial-building.js
 import {activityCenterBuilding, activityCenterId} from './activity-center.js';
 import {newDormBuilding, newDormIds} from './new-dorms.js';
 import {facultyResidenceId, facultyResidenceBuilding, facultyResidenceBuildingIds} from './faculty-residence.js';
-import {createDormBatch, dormBuilding, dormSpec} from './dorms.js';
+import {administrationId, styledBuilding, styledBuildingSpec} from './dorms.js';
+import {createBoxBatch} from './kit.js';
+import {memorialHallBuilding, memorialHallId} from './memorial-hall.js';
+import {technologyBuilding, technologyBuildingId} from './technology-building.js';
 import {addGates} from './gates.js';
 
 const detailedBuildings = new Map([
   [fineArtsId, fineArtsBuilding],
+  [memorialHallId, memorialHallBuilding],
+  [technologyBuildingId, technologyBuilding],
   [provincialBuildingId, provincialBuilding],
   [activityCenterId, activityCenterBuilding],
   ...newDormIds.map(id=>[id,newDormBuilding]),
@@ -134,12 +139,23 @@ export function makeWorld(scene, geo, terrain, chapel) {
     group.add(mesh);
     return mesh;
   }
-  const dormBatch = createDormBatch();
+  const styledBatch = createBoxBatch();
   for (const f of geo.buildings) {
     if (f.osm === 'w227101621') continue;
-    const dorm = dormSpec(f);
-    if (dorm) {
-      buildings.add(dormBuilding(f, height, dorm, dormBatch).group);
+    const styled = styledBuildingSpec(f);
+    if (styled) {
+      const built = styledBuilding(f, height, styled, styledBatch);
+      buildings.add(built.group);
+      if (styled.place) {
+        // The wings of one landmark (行政大樓) select it together.
+        built.group.traverse(object => {
+          if (object.isMesh) {
+            object.userData.osm = styled.place;
+            hits.push(object);
+          }
+        });
+        byId.set(styled.place, Math.max(byId.get(styled.place) ?? -Infinity, built.top + 2.5));
+      }
       continue;
     }
     const makeDetailedBuilding = detailedBuildings.get(f.osm);
@@ -242,7 +258,7 @@ export function makeWorld(scene, geo, terrain, chapel) {
     }
     buildings.add(b);
   }
-  dormBatch.flush(buildings);
+  styledBatch.flush(buildings);
   scene.add(buildings);
 
   const churchPoint=geo.pois.find(p=>p.osm==='w227101621');

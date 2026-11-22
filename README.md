@@ -1,6 +1,6 @@
 # 東海大學 3D 校園
 
-互動導覽涵蓋臺中東海大學的第一、第二教學區，可旋轉、縮放並選取 28 處地標。
+互動導覽涵蓋臺中東海大學的第一、第二教學區，可旋轉、縮放並選取 29 處地標。
 
 - [開啟 3D 校園](https://ctyangthu.github.io/tunghai-campus-3d/)
 - [近看美術系館](https://ctyangthu.github.io/tunghai-campus-3d/?place=w367198636)
@@ -9,6 +9,7 @@
 - [近看楊瑞祥綜合活動大樓](https://ctyangthu.github.io/tunghai-campus-3d/?place=yang-activity-center)
 - [近看 400 公尺田徑場](https://ctyangthu.github.io/tunghai-campus-3d/?place=r5467507)
 - [近看東海路 136 號教師宿舍](https://ctyangthu.github.io/tunghai-campus-3d/?place=faculty-residence-136)
+- [近看中正紀念堂入口](https://ctyangthu.github.io/tunghai-campus-3d/?place=w367195941) · [近看大智慧科技大樓](https://ctyangthu.github.io/tunghai-campus-3d/?place=w1302996436) · [近看行政大樓](https://ctyangthu.github.io/tunghai-campus-3d/?place=administration-building)
 - [近看第一教學區校門與校名塔](https://ctyangthu.github.io/tunghai-campus-3d/?place=n5439892666)
 - [近看第二教學區校門](https://ctyangthu.github.io/tunghai-campus-3d/?place=second-teaching-area-gate)
 - [鳥瞰男生宿舍區](https://ctyangthu.github.io/tunghai-campus-3d/?view=-470,-245,150,0.3,0.6) · [鳥瞰女生宿舍區](https://ctyangthu.github.io/tunghai-campus-3d/?view=-320,165,140,0.35,0.55)
@@ -66,6 +67,7 @@ node scripts/compare-geo.mjs docs/data/campus-geo.json .cache/campus-geo.json --
 - 宿舍 32、33 棟保留 OpenStreetMap 輪廓，依建築師公布的地上九層、29.85 公尺重建。 [校方沿革](https://sustainable.thu.edu.tw/public/cat1-1/) · [建築師作品資料](https://www.twarchitect.org.tw/works/東海大學學生宿舍/)
 - 楊瑞祥綜合活動大樓以國土測繪中心 2024 年正射影像的施工基礎定位，並參考校方 2026 年外觀照片近似建模。田徑場跑道色澤依校方照片更新。 [國土測繪中心圖資](https://maps.nlsc.gov.tw/S09SOA/pro/Wmts_ajax_main.jsp) · [校方場館照片](https://thupr.thu.edu.tw/newsdetail.php?c=60&id=53630)
 - 牧場南側的智慧碳中和園區由開放地景與分散設施組成。導覽已移除園區邊界誤生成的整塊建物量體。 [校方園區介紹](https://sustainable.thu.edu.tw/campus/carbon/)
+- 中正紀念堂的東側門廳與屋頂太陽能板依正射影像，入口與圖書館總館同樣朝東面向文理大道。大智慧科技大樓沿用地圖輪廓，系所樓層依各單位公告，立面與樓高為近似。行政大樓為校長室對面總務處、學務處等單位所在的建築群，OpenStreetMap 分為五個翼棟，牆面依早期行政建築的照片近似。 [資訊工程學系樓層圖](https://www.cs.thu.edu.tw/web/page/page.php?lang=zh_tw&scid=18&sid=12) · [圖資處服務台](https://lis.thu.edu.tw/web/page/page.php?lang=zh_tw&scid=57&sid=106)
 - 第一教學區校門依國土測繪中心 2024 年正射影像配置車道、中央分隔島與東側廣場。校門於 2024 年 7 月至 8 月拓寬，左前方的白色校名塔約 15 公尺高，塔頂東西兩面嵌有校名；塔身比例與警衛亭、柵欄機為近似建模。第二教學區校門依同一影像與交通及安全組公告設置車辨柵欄機與繳費機。 [校門拓寬工程公告](https://business.thu.edu.tw/web/news/detail.php?id=151) · [東海大學校門介紹](http://thugo.thu.edu.tw/chinese/04_school/02_detail.php?sdid=3) · [交通及安全組公告](https://tcs.thu.edu.tw/web/news/list.php?page=2)
 - 學生宿舍的外觀依正射影像的屋頂色彩、屋脊與太陽能板，並參考臺中市文化資產處「東海大學早期校園」文化景觀照片：早期男生宿舍為清水紅磚牆與灰瓦廡殿頂，女生宿舍為白牆、木作走廊欄杆與灰瓦屋頂，30、72、73 棟為平屋頂的中高層建築。樓層取自 OpenStreetMap，未標註者依住宿輔導組的床位公告估計（30 棟至少 10 層、73 棟 8 層），其餘早期宿舍以兩層建模。 [東海大學早期校園文化景觀](https://www.tchac.taichung.gov.tw/uploads/tchac/files/202105/5ee76a08-09f2-485d-971c-66f35e46a3f0.pdf) · [住宿輔導組公告](https://dorm.thu.edu.tw/upload/dorm/files/115學年度第二階段宿舍申請抽籤最新公告_0413v5.pdf)
 - 戶外田徑場的 400 公尺規格和門牌來自場館登錄。東海路 136 號在另一處，三棟教師宿舍沿用 OpenStreetMap 輪廓，樓層依校方配置圖建模，建物高度與外觀為近似。 [全國運動場館資訊網](https://iplay.sports.gov.tw/gyminfo/index/15050) · [教職員宿舍資訊](https://ppms.thu.edu.tw/web/student/detail.php?cid=1&id=8)

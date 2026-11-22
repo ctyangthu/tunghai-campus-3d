@@ -8,6 +8,9 @@ import {newDormIds} from './new-dorms.js';
 import {applyCampusRevisions} from './campus-revisions.js';
 import {facultyResidenceId} from './faculty-residence.js';
 import {mainGateId, secondGateId} from './gates.js';
+import {memorialHallId} from './memorial-hall.js';
+import {technologyBuildingId} from './technology-building.js';
+import {administrationId} from './dorms.js';
 
 const root=document.getElementById('tunghai-campus');
 const el=selector=>root.querySelector(selector);
@@ -128,9 +131,12 @@ function init({geo:sourceGeo,terrain,chapel}) {
   let state={x:board.x,y:76,z:board.z,az:orbit.az,el:orbit.el,size:1};
   let tween=null, frame=0, overview=true, focusActive=false;
   const active=new Map();
-  const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId, ...newDormIds, mainGateId, secondGateId]);
+  const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId, ...newDormIds, mainGateId, secondGateId, memorialHallId, technologyBuildingId, administrationId]);
   const closeAngles = {
     [mainGateId]:{az:2.72,el:.46},
+    [memorialHallId]:{az:1.25,el:.42},
+    [technologyBuildingId]:{az:-1.35,el:.45},
+    [administrationId]:{az:.45,el:.55},
     [secondGateId]:{az:2.62,el:.5},
     w227101621:{az:.72,el:.49},
     [fineArtsId]:{az:1.03,el:.43},

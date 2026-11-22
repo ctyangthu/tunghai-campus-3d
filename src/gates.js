@@ -1,4 +1,5 @@
 import * as T from 'three';
+import {paint, textPanel} from './kit.js';
 
 // The two vehicle gates on 臺灣大道.
 //
@@ -41,13 +42,6 @@ function pointAt(origin, forward, u, v) {
   const [x, z] = frame(origin, forward)(u, v);
   return {x, z};
 }
-
-const materials = new Map();
-const paint = (color, options = {}) => {
-  const key = color + JSON.stringify(options);
-  if (!materials.has(key)) materials.set(key, new T.MeshLambertMaterial({color, ...options}));
-  return materials.get(key);
-};
 
 // A paved surface draped over the terrain with its own high-resolution texture.
 function decal(at, terrainHeight, [u0, u1], [v0, v1], draw, pxPerMetre = 14) {
@@ -142,30 +136,6 @@ function boxes(at, terrainHeight, yaw, base) {
       }
     },
   };
-}
-
-function textPanel(text, width, height, {background = '#f5f4ef', color = '#233b31', vertical = false} = {}) {
-  const canvas = document.createElement('canvas');
-  canvas.width = Math.round(width * 64);
-  canvas.height = Math.round(height * 64);
-  const ctx = canvas.getContext('2d');
-  ctx.fillStyle = background;
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-  ctx.fillStyle = color;
-  ctx.textAlign = 'center';
-  ctx.textBaseline = 'middle';
-  if (vertical) {
-    const step = canvas.height / text.length;
-    ctx.font = `600 ${Math.min(step * .78, canvas.width * .74)}px "Noto Serif TC", "Songti TC", serif`;
-    [...text].forEach((char, i) => ctx.fillText(char, canvas.width / 2, step * (i + .5)));
-  } else {
-    ctx.font = `600 ${canvas.height * .56}px system-ui, sans-serif`;
-    ctx.fillText(text, canvas.width / 2, canvas.height / 2);
-  }
-  const texture = new T.CanvasTexture(canvas);
-  texture.colorSpace = T.SRGBColorSpace;
-  texture.anisotropy = 4;
-  return new T.Mesh(new T.PlaneGeometry(width, height), new T.MeshBasicMaterial({map: texture}));
 }
 
 function mainGate(ground) {
