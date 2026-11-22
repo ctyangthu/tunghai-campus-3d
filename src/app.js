@@ -7,6 +7,9 @@ import {activityCenterId} from './activity-center.js';
 import {newDormIds} from './new-dorms.js';
 import {applyCampusRevisions} from './campus-revisions.js';
 import {facultyResidenceId} from './faculty-residence.js';
+import {mainGateId, secondGateId} from './gates.js';
+import {technologyBuildingId} from './technology-building.js';
+import {administrationBuildingId} from './west-admin.js';
 import {alumniBellId, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
 
 const root=document.getElementById('tunghai-campus');
@@ -15,7 +18,12 @@ const {clamp}=T.MathUtils;
 const select=el('#thu-destination');
 const map=el('.thu-map');
 const mapButtons=[...root.querySelectorAll('[data-action],[data-view]')];
-const requestedPlace=places.find(p=>p.id===new URLSearchParams(window.location.search).get('place'));
+const query=new URLSearchParams(window.location.search);
+const requestedPlace=places.find(p=>p.id===query.get('place'));
+const requestedView=(()=>{
+  const values=(query.get('view')||'').split(',').map(Number);
+  return values.length>=3&&values.every(Number.isFinite)?values:null;
+})();
 let selected=places[0];
 let navigate=()=>{};
 const aerialLinks=new Map();
@@ -144,8 +152,13 @@ function init({geo:sourceGeo,terrain,chapel}) {
   let tween=null, frame=0, overview=true, focusActive=false;
   const active=new Map();
   const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId,
-    alumniBellId, wenliBoulevardId, ...newDormIds, ...wenliCourtyards.map(court=>court.id), ...aerialLinks.keys()]);
+    alumniBellId, wenliBoulevardId, ...newDormIds, ...wenliCourtyards.map(court=>court.id), ...aerialLinks.keys(),
+    mainGateId, secondGateId, technologyBuildingId, administrationBuildingId]);
   const closeAngles = {
+    [mainGateId]:{az:2.72,el:.46},
+    [technologyBuildingId]:{az:-1.35,el:.45},
+    [administrationBuildingId]:{az:.45,el:.55},
+    [secondGateId]:{az:2.62,el:.5},
     w227101621:{az:.72,el:.49},
     [fineArtsId]:{az:1.03,el:.43},
     [provincialBuildingId]:{az:2.49,el:.48},
@@ -162,10 +175,9 @@ function init({geo:sourceGeo,terrain,chapel}) {
     w368304680:{az:2.74,el:.65},
     w367195923:{az:.95,el:.43},
     w367196899:{az:1.14,el:.62},
-    w367195941:{az:.20,el:.49},
+    w367195941:{az:1.29,el:.45}, // entrance faces east, like the library's
     w368066316:{az:1.50,el:.62},
     w368304652:{az:.40,el:.40},
-    w368304658:{az:.55,el:.59},
     w227103239:{az:-2.75,el:.38},
     w227106503:{az:-1.22,el:.54},
     w227104642:{az:-1.25,el:.47},
@@ -295,6 +307,13 @@ function init({geo:sourceGeo,terrain,chapel}) {
       focusedOnLoad=true;
       const point=coordinates.get(requestedPlace.id);
       if(point) navigate(requestedPlace);
+    }
+    // ?view=x,z,size[,azimuth,elevation] opens a camera position in scene metres.
+    if(requestedView&&!focusedOnLoad){
+      focusedOnLoad=true;
+      const [x,z,size,az=orbit.az,el=orbit.el]=requestedView;
+      overview=false;
+      go({x,z,y:height(x,z),size,az,el},0);
     }
     if(overview) {
       if(tween){tween.to.size=pageFit(view==='top'?bird:orbit);}

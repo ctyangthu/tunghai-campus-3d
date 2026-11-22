@@ -298,32 +298,38 @@ function mainLibrary(item,terrainHeight) {
   return model.finish(ridge+.18);
 }
 
+// 中正紀念堂. The entrance faces east down 文理大道, the same way as the library's
+// porch: the design's front (+z) is turned onto the campus axis, so the 55 m east
+// face carries the curved canopy, glazing, columns and steps, and the hall runs
+// 82 m back to the west.
 function auditorium(item,terrainHeight) {
   const model = modelFor(item,terrainHeight);
   const wall = paint('#ceba98');
   const ochre = tiledRoof('#c3975c');
   const gray = tiledRoof('#8c8d80');
   const roofStrip = paint('#88a99d');
-  const x0=-41.25, x1=41.2, rear=-27.2, front=27.65;
-  const entryLevel=-.4, lip=5.65, facade=19.35;
+  const x0=-27.65, x1=27.2, rear=-41.25, front=41.2;
+  const entryLevel=-.4, lip=5.65, facade=front-8.3;
+  const split=front-10.83, back=split-.02, canopyBack=front-10.9;
+  const ridgeA=-2.6, ridgeB=1.7;
 
   model.block(x0,x1,rear,front,model.low,entryLevel,concrete);
-  model.block(x0,x1,rear,16.82,entryLevel,11.85,wall);
-  model.block(x0,x1,16.82,facade,entryLevel,6.05,wall);
-  model.block(x0,x1,rear,1.6,11.83,13.18,concrete);
-  model.block(x0+.70,x1-.70,rear+.2,-2.3,13.17,13.66,gray);
-  model.block(x0+.38,x1-.38,-2.3,2.0,12.40,12.62,roofStrip);
-  model.block(x0+.26,x1-.26,2.0,16.8,11.85,12.21,gray);
+  model.block(x0,x1,rear,split,entryLevel,11.85,wall);
+  model.block(x0,x1,split,facade,entryLevel,6.05,wall);
+  model.block(x0,x1,rear,ridgeB-.1,11.83,13.18,concrete);
+  model.block(x0+.70,x1-.70,rear+.2,ridgeA,13.17,13.66,gray);
+  model.block(x0+.38,x1-.38,ridgeA,ridgeB,12.40,12.62,roofStrip);
+  model.block(x0+.26,x1-.26,ridgeB,back,11.85,12.21,gray);
 
   // Broad low roof planes above the hall behind the curved entrance canopy.
-  model.surface([[x0,13.18,rear],[x1,13.18,rear],[x1,14.6,-2.3],[x0,14.6,-2.3]],
+  model.surface([[x0,13.18,rear],[x1,13.18,rear],[x1,14.6,ridgeA],[x0,14.6,ridgeA]],
     [0,1,2,0,2,3],gray);
-  model.surface([[x0,13.85,1.95],[x1,13.85,1.95],[x1,12.15,16.8],[x0,12.15,16.8]],
+  model.surface([[x0,13.85,ridgeB-.05],[x1,13.85,ridgeB-.05],[x1,12.15,back],[x0,12.15,back]],
     [0,1,2,0,2,3],gray);
-  for (const [x,width] of [[-26.5,2.5],[18.6,2.7]]) {
-    model.surface([[x,14.63,-2.3],[x+width,14.63,-2.3],[x+width,13.22,rear],[x,13.22,rear]],
+  for (const [x,width] of [[-17.4,2.5],[12.2,2.7]]) {
+    model.surface([[x,14.63,ridgeA],[x+width,14.63,ridgeA],[x+width,13.22,rear],[x,13.22,rear]],
       [0,1,2,0,2,3],roofStrip);
-    model.surface([[x,13.88,1.95],[x+width,13.88,1.95],[x+width,12.18,16.8],[x,12.18,16.8]],
+    model.surface([[x,13.88,ridgeB-.05],[x+width,13.88,ridgeB-.05],[x+width,12.18,back],[x,12.18,back]],
       [0,1,2,0,2,3],roofStrip);
   }
 
@@ -331,7 +337,7 @@ function auditorium(item,terrainHeight) {
   for (let i=0;i<=12;i++){
     const t=i/12;
     const y=lip+.62*t+5.86*Math.pow(t,2.9);
-    const z=front-(front-16.75)*t;
+    const z=front-(front-canopyBack)*t;
     canopy.push([x0-.58,y,z],[x1+.56,y,z]);
   }
   const canopyIndices = Array.from({length:12},(_,i)=>{
@@ -340,15 +346,16 @@ function auditorium(item,terrainHeight) {
   }).flat();
   model.surface(canopy,canopyIndices,ochre);
   model.box(0,lip-.20,front-.07,x1-x0+1.18,.58,.55,concrete);
-  model.box(0,12.14,16.73,x1-x0+1.15,.40,.62,concrete);
+  model.box(0,12.14,canopyBack-.02,x1-x0+1.15,.40,.62,concrete);
+  const sideBays = Math.floor((back-rear-2.45)/2.85);
   for (const x of [x0,x1]) {
-    const rearTop = [[x,13.18,rear],[x,14.6,-2.3],[x,13.86,1.95],[x,12.15,16.8]];
+    const rearTop = [[x,13.18,rear],[x,14.6,ridgeA],[x,13.86,ridgeB-.05],[x,12.15,back]];
     const roofEdge = [...rearTop,...canopy.filter((_,i)=>i%2===(x===x0?0:1)).slice(0,-1).reverse()
       .map(([,y,z])=>[x,y,z])];
     const last=roofEdge.length;
     model.surface([...roofEdge,...roofEdge.map(([,y,z],i)=>[x,i<=3?11.8:lip-.51,z])],
       Array.from({length:last-1},(_,i)=>[i,i+1,last+i+1,i,last+i+1,last+i]).flat(),wall);
-    for (let bay=0;bay<15;bay++) {
+    for (let bay=0;bay<sideBays;bay++) {
       const z=rear+2.45+2.85*bay;
       model.box(x+Math.sign(x)*.07,7.1,z,.12,2.15,1.46,dark);
       model.box(x+Math.sign(x)*.28,6.85,z,.45,4.55,.28,pale);
@@ -357,17 +364,18 @@ function auditorium(item,terrainHeight) {
 
   model.box(0,3.13,facade+.14,x1-x0-.82,4.28,.43,dark);
   model.box(0,5.88,facade+.20,x1-x0-.66,1.35,.45,mortar);
-  for (let bay=0;bay<26;bay++) {
-    const x=-39.0+bay*3.08;
+  const facadeBays = Math.floor((x1-x0-2.4)/3.08);
+  for (let bay=0;bay<facadeBays;bay++) {
+    const x=(x0+x1)/2+(bay-(facadeBays-1)/2)*3.08;
     model.box(x,2.56,facade+.41,2.62,2.96,.12,glass);
     model.box(x+.20,2.62,facade+.49,.11,3.08,.12,metal);
   }
-  for (const x of [-35,-24,-12,0,12,24,35]) {
+  for (const x of [-23,-11.5,0,11.5,23]) {
     model.box(x,(entryLevel+lip)/2,front-1.86,.82,lip-entryLevel,.82,pale,unitColumn);
   }
-  model.box(0,entryLevel-.07,front+.52,76,.25,1.63,concrete);
+  model.box(0,entryLevel-.07,front+.52,x1-x0-4,.25,1.63,concrete);
   for (let step=0;step<5;step++) {
-    model.block(-38,38,front+1.08+step*.47,front+1.55+step*.47,
+    model.block(x0+2.4,x1-2.4,front+1.08+step*.47,front+1.55+step*.47,
       model.low,entryLevel-.10-step*.16,concrete);
   }
 
@@ -388,7 +396,10 @@ function auditorium(item,terrainHeight) {
     const sign = model.add(new T.PlaneGeometry(10.9,1.36),new T.MeshLambertMaterial({map:texture}));
     sign.position.set(0,5.96,facade+.45);
   }
-  return model.finish(14.65);
+  const result = model.finish(14.65);
+  // Turn the design's front (+z) onto the campus axis, i.e. east down 文理大道.
+  result.group.rotation.y += Math.PI/2;
+  return result;
 }
 
 export const northernLandmarks = new Map([

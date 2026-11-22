@@ -2,10 +2,14 @@ import * as T from 'three';
 import {addGableRoof,courtyardWing} from './wenli-heritage.js';
 
 const languageId = 'w368066316';
-const administrationId = 'w368304658';
 const presidentId = 'w368304652';
 const religionId = 'w227103239';
-const oldLibraryEntranceId = 'w368283837';
+
+// 行政大樓 is the complex opposite 校長室 that houses 總務處, 學生事務處, 教務處, 會計室 and
+// 勞作教育處. OpenStreetMap maps its five wings separately (and names the lawn of the
+// 校長室 courtyard 行政大樓); here the wings share one landmark and select together.
+export const administrationBuildingId = 'administration-building';
+export const administrationWings = ['w368283835', 'w368283836', 'w368283837', 'w368283838', 'w368283840'];
 
 const material = (color, options={}) => new T.MeshLambertMaterial({color,...options});
 const concrete = material('#9e9c8e');
@@ -326,13 +330,14 @@ function christianCenter(item,height) {
   return finish(group,religionId,high+.45,[base,core,moonGate,innerGlazing,...siding]);
 }
 
-const adminWing = (item,height)=>courtyardWing(item,height,{id:administrationId,levels:1});
-const oldLibraryEntrance = (item,height)=>courtyardWing(item,height,{id:oldLibraryEntranceId,levels:1});
+// 秘書室, 公共關係室 and 人事室 close the lawn courtyard of 校長室 and select it.
+const presidentWing = (item,height)=>courtyardWing(item,height,{id:presidentId,levels:1});
+const administrationWing = (item,height)=>courtyardWing(item,height,{id:administrationBuildingId,levels:1});
 
 export const westAdminLandmarks = new Map([
   ...['w129849166','w129849225','w368304687','w368304689'].map(id=>[id,languageBuilding]),
   [presidentId,presidentOffice],
-  ...['w367194690','w368304655','w368304666'].map(id=>[id,adminWing]),
+  ...['w367194690','w368304655','w368304666'].map(id=>[id,presidentWing]),
   [religionId,christianCenter],
-  ...['w368283836','w368283837'].map(id=>[id,oldLibraryEntrance]),
+  ...administrationWings.map(id=>[id,administrationWing]),
 ]);
