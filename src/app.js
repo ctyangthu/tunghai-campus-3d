@@ -3,6 +3,9 @@ import {places,zones} from './places.js';
 import {makeWorld} from './scene.js';
 import {fineArtsId} from './fine-arts.js';
 import {provincialBuildingId} from './provincial-building.js';
+import {activityCenterId} from './activity-center.js';
+import {newDormIds} from './new-dorms.js';
+import {applyCampusRevisions} from './campus-revisions.js';
 
 const root=document.getElementById('tunghai-campus');
 const el=selector=>root.querySelector(selector);
@@ -57,7 +60,8 @@ async function openData() {
   return new Response(stream).json();
 }
 
-function init({geo,terrain,chapel}) {
+function init({geo:sourceGeo,terrain,chapel}) {
+  const geo=applyCampusRevisions(sourceGeo);
   const renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
   renderer.setPixelRatio(Math.min(devicePixelRatio||1, 1.8));
   renderer.outputColorSpace=T.SRGBColorSpace;
@@ -117,6 +121,15 @@ function init({geo,terrain,chapel}) {
   let state={x:board.x,y:76,z:board.z,az:orbit.az,el:orbit.el,size:1};
   let tween=null, frame=0, overview=true, focusActive=false;
   const active=new Map();
+  const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, ...newDormIds]);
+  const closeAngles = {
+    w227101621:{az:.72,el:.49},
+    [fineArtsId]:{az:1.03,el:.43},
+    [provincialBuildingId]:{az:2.49,el:.48},
+    [activityCenterId]:{az:2.76,el:.48},
+    [newDormIds[0]]:{az:2.86,el:.50},
+    [newDormIds[1]]:{az:2.86,el:.50},
+  };
 
   function pageFit(angle) {
     const aspect=widthPx/Math.max(1,heightPx);
@@ -171,7 +184,7 @@ function init({geo,terrain,chapel}) {
       }
     }
     const point=coordinates.get(selected.id);
-    ring.visible=focusActive&&Boolean(point)&&selected.id!==fineArtsId&&selected.id!==provincialBuildingId;
+    ring.visible=focusActive&&Boolean(point)&&!detailedLandmarks.has(selected.id);
     if(ring.visible){
       const radius=selected.id==='w227101621'?17:Math.min(44,Math.max(6,selected.width*.088));
       ring.position.set(point.x,height(point.x,point.z)+1.2,point.z);
@@ -221,11 +234,6 @@ function init({geo,terrain,chapel}) {
     overview=false;
     focusActive=true;
     const grade=height(point.x,point.z);
-    const closeAngles={
-      w227101621:{az:.72,el:.49},
-      [fineArtsId]:{az:1.03,el:.43},
-      [provincialBuildingId]:{az:2.49,el:.48},
-    };
     const angle=view==='top'?bird:(closeAngles[place.id]??{az:.54,el:.72});
     go({x:point.x,y:grade+(byId.has(place.id)?6:0),z:point.z,size:place.width*Math.max(1,.92*heightPx/widthPx),...angle},920);
   };

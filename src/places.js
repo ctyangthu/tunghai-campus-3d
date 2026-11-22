@@ -1,6 +1,7 @@
 const campusMap = 'https://thupr.thu.edu.tw/traffic.php';
 const walks = 'https://fineart.thu.edu.tw/web/visit/page.php?scid=44&sid=72';
 const park = 'https://thupr.thu.edu.tw/newsdetail.php?c=60&id=53364';
+const newDormSource = 'https://www.twarchitect.org.tw/works/東海大學學生宿舍/';
 export const zones = ['第一教學區', '校園生活與牧場', '第二教學區'];
 export const places = [
   ['w227101621',0,'路思義教堂','Luce Memorial Chapel','四片曲面屋殼沿著採光縫向上收合。這座國定古蹟位在早期校園核心，草坪另一側可見畢律斯鐘樓。','https://chaplain.thu.edu.tw/web/page/page.php?scid=8&sid=29',1,140],
@@ -15,6 +16,9 @@ export const places = [
   ['w367195923',0,'社會科學院','College of Social Sciences','社會科學教學大樓鄰近相思林，地下樓層設有芳華廳藝術空間。',walks,0,180],
   ['w1302996436',0,'大智慧科技大樓','Intelligent Technology Building','第一教學區的科技教學地標，鄰近中正紀念堂與科技路。',campusMap,0,170],
   ['w341450780',0,'相思林','Acacia Woods','校園西側的林地，林間步道銜接東海別墅與第一教學區。',walks,0,260],
+  ['w1344753003',0,'新建學生宿舍32棟','Student Residence 32','臺灣大道旁的新建女宿。2024 年落成，地上九層，立面以淺色外牆與紅磚格柵交錯呈現。',newDormSource,1,122],
+  ['w1344753007',0,'新建學生宿舍33棟','Student Residence 33','與 32 棟同一計畫興建的新建男宿。2024 年落成，地上九層，透過階梯廣場銜接既有宿舍區。',newDormSource,0,122],
+  ['yang-activity-center',0,'楊瑞祥綜合活動大樓','Multi-Purpose Activity Center','位於田徑場南側，與西側舊體育館連通。地上三層、地下一層，規劃室內跑道與多功能球場，2026 年校慶舉行剪綵。','https://thupr.thu.edu.tw/newsdetail.php?c=60&id=53634',1,132],
   ['w227104642',1,'銘賢堂','Ming-Hsien Hall','位於教堂與學生生活區之間，可由教堂沿校方藝文散步路線抵達。',walks,0,155],
   ['w227124385',1,'陽光草坪','Sunshine Lawn','鄰近女生宿舍，在銘賢堂往乳品小棧的藝文散步路線上。',walks,0,195],
   ['w227075021',1,'綠之心・乳品小棧','Green Heart Hall','位在教學區與牧場之間，是校園散步和品嚐東海乳品的停留點。','https://thucwc.thu.edu.tw/store/',1,165],

@@ -1,10 +1,14 @@
 import * as T from 'three';
 import {fineArtsId, fineArtsBuilding} from './fine-arts.js';
 import {provincialBuildingId, provincialBuilding} from './provincial-building.js';
+import {activityCenterBuilding, activityCenterId} from './activity-center.js';
+import {newDormBuilding, newDormIds} from './new-dorms.js';
 
 const detailedBuildings = new Map([
   [fineArtsId, fineArtsBuilding],
   [provincialBuildingId, provincialBuilding],
+  [activityCenterId, activityCenterBuilding],
+  ...newDormIds.map(id=>[id,newDormBuilding]),
 ]);
 
 const decode = (value, ArrayType) => new ArrayType(Uint8Array.from(atob(value), c => c.charCodeAt(0)).buffer);
@@ -289,7 +293,7 @@ function groundTexture(geo,bounds,height) {
     swimming_pool:'#7db3b3',farmland:'#b9cc91',orchard:'#aac18c',residential:'#cfccb3',sand:'#ddc49c',
     university:'#c8d7a2',education:'#c8d7a2'};
   for(const f of geo.land) {
-    const color=landColor[f.type];
+    const color=f.osm==='r5467507'?'#61859e':landColor[f.type];
     if (color) area(f.points,color,f.holes);
   }
   for(let i=0;i<4300;i++){

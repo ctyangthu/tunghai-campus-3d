@@ -20,7 +20,7 @@ const html = `<!doctype html>
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="description" content="以互動 3D 地圖遊覽臺中東海大學兩個教學區與 22 處地標。">
+  <meta name="description" content="以互動 3D 地圖遊覽臺中東海大學兩個教學區與 25 處地標。">
   <title>東海大學 3D 校園</title>
   <style>${common}</style>
 </head>
