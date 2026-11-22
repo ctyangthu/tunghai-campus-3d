@@ -4,20 +4,29 @@ import {provincialBuildingId, provincialBuilding} from './provincial-building.js
 import {activityCenterBuilding, activityCenterId} from './activity-center.js';
 import {newDormBuilding, newDormIds} from './new-dorms.js';
 import {facultyResidenceId, facultyResidenceBuilding, facultyResidenceBuildingIds} from './faculty-residence.js';
-import {administrationId, styledBuilding, styledBuildingSpec} from './dorms.js';
+import {styledBuilding, styledBuildingSpec} from './dorms.js';
 import {createBoxBatch} from './kit.js';
-import {memorialHallBuilding, memorialHallId} from './memorial-hall.js';
 import {technologyBuilding, technologyBuildingId} from './technology-building.js';
 import {addGates} from './gates.js';
+import {alumniBellId, alumniBellTower, courtyardWing, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
+import {northernLandmarks} from './northern-landmarks.js';
+import {westAdminLandmarks} from './west-admin.js';
+import {campusSocialLandmarks} from './campus-social.js';
+import {livingLandmarks} from './living-landmarks.js';
 
 const detailedBuildings = new Map([
   [fineArtsId, fineArtsBuilding],
-  [memorialHallId, memorialHallBuilding],
   [technologyBuildingId, technologyBuilding],
   [provincialBuildingId, provincialBuilding],
   [activityCenterId, activityCenterBuilding],
   ...newDormIds.map(id=>[id,newDormBuilding]),
   ...facultyResidenceBuildingIds.map(id=>[id,facultyResidenceBuilding]),
+  ...northernLandmarks,
+  ...westAdminLandmarks,
+  ...campusSocialLandmarks,
+  ...livingLandmarks,
+  ...wenliCourtyards.flatMap(court=>[...court.wings,court.passage]
+    .filter(Boolean).map(id=>[id,(building,height)=>courtyardWing(building,height,court)])),
 ]);
 
 const decode = (value, ArrayType) => new ArrayType(Uint8Array.from(atob(value), c => c.charCodeAt(0)).buffer);
@@ -142,20 +151,9 @@ export function makeWorld(scene, geo, terrain, chapel) {
   const styledBatch = createBoxBatch();
   for (const f of geo.buildings) {
     if (f.osm === 'w227101621') continue;
-    const styled = styledBuildingSpec(f);
+    const styled = !detailedBuildings.has(f.osm) && styledBuildingSpec(f);
     if (styled) {
-      const built = styledBuilding(f, height, styled, styledBatch);
-      buildings.add(built.group);
-      if (styled.place) {
-        // The wings of one landmark (行政大樓) select it together.
-        built.group.traverse(object => {
-          if (object.isMesh) {
-            object.userData.osm = styled.place;
-            hits.push(object);
-          }
-        });
-        byId.set(styled.place, Math.max(byId.get(styled.place) ?? -Infinity, built.top + 2.5));
-      }
+      buildings.add(styledBuilding(f, height, styled, styledBatch).group);
       continue;
     }
     const makeDetailedBuilding = detailedBuildings.get(f.osm);
@@ -172,10 +170,9 @@ export function makeWorld(scene, geo, terrain, chapel) {
     }
     const isHist=f.x < -459 && f.x > -902 && f.z > -77 && f.z < 134 && f.height < 14;
     const isFeatured=representatives.has(f.osm);
-    const isLibrary=f.osm==='w367196899';
     const isCourt=f.osm==='w226829984';
     const isFormerArt=f.osm==='w227117506';
-    const h=(isLibrary?15:isCourt?Math.max(17,f.height):isFormerArt?4:f.height || 7)*1.12;
+    const h=(isCourt?Math.max(17,f.height):isFormerArt?4:f.height || 7)*1.12;
     const grade = height(f.x,f.z);
     const low = Math.min(grade,...f.points.map(([x,z])=>height(x,z)));
     const top = Math.max(grade+h,...f.points.map(([x,z])=>height(x,z)+2));
@@ -186,14 +183,6 @@ export function makeWorld(scene, geo, terrain, chapel) {
     b.position.set(f.x,low-.45,f.z);
     b.userData.osm=f.osm;
     const footprint=shapeFor(f);
-    if(isLibrary && !f.holes?.length){
-      const court=new T.Path();
-      const angle=.286,c=Math.cos(angle),s=Math.sin(angle);
-      [[-14,-11],[14,-11],[14,11],[-14,11]].forEach(([x,z],index)=>{
-        court[index?'lineTo':'moveTo'](x*c-z*s,-x*s-z*c);
-      });
-      footprint.holes.push(court);
-    }
     const solid=new T.ExtrudeGeometry(footprint,{depth:top-low+.45,bevelEnabled:false,curveSegments:1});
     solid.rotateX(-Math.PI/2);
     addBuildingPart(b, solid, [roof,facade]);
@@ -306,6 +295,14 @@ export function makeWorld(scene, geo, terrain, chapel) {
   plantingExclusions.push(...gates.exclusions);
   for (const [id, top] of gates.tops) byId.set(id, top + 2.5);
 
+  const alumniBell=geo.pois.find(p=>p.osm===alumniBellId);
+  if(alumniBell){
+    const model=alumniBellTower(alumniBell,height);
+    scene.add(model.group);
+    hits.push(...model.pickables);
+    byId.set(alumniBellId,model.top+1.5);
+  }
+
   plantTrees(scene,geo,height,bounds,plantingExclusions);
   return {height,board,byId,hits};
 }
@@ -378,9 +375,40 @@ function groundTexture(geo,bounds,height) {
   const main = new Set(['trunk','trunk_link','primary','secondary','tertiary','primary_link','secondary_link']);
   const foot = new Set(['footway','path','steps','pedestrian','cycleway','corridor']);
   const isMain = road => main.has(road.type) || /臺灣大道|台灣大道/.test(road.name);
-  for (const f of [...geo.roads].sort((a,b)=>Number(isMain(a))-Number(isMain(b)))) {
+  for (const f of [...geo.roads].sort((a,b)=>Number(b.osm===wenliBoulevardId)-Number(a.osm===wenliBoulevardId)
+    || Number(isMain(a))-Number(isMain(b)))) {
     const broad=isMain(f), walk=foot.has(f.type), special=f.name==='文理大道';
     const w = Math.max(walk ? 1.8 : 3.3, f.width)*(broad?1.15:1);
+    if (f.osm===wenliBoulevardId && f.points.length===2) {
+      const [[ax,az],[bx,bz]]=f.points;
+      const length=Math.hypot(bx-ax,bz-az);
+      const nx=(az-bz)/length,nz=(bx-ax)/length;
+      ctx.beginPath();
+      path(f.points);
+      ctx.lineWidth=12;
+      ctx.strokeStyle='#a9be81';
+      ctx.stroke();
+      ctx.strokeStyle='#c8bd9e';
+      ctx.lineWidth=2.9;
+      for (const offset of [-4.15,4.15]) {
+        ctx.beginPath();
+        path(f.points.map(([x,z])=>[x+nx*offset,z+nz*offset]));
+        ctx.stroke();
+      }
+      ctx.save();
+      ctx.lineCap='butt';
+      ctx.lineWidth=.31;
+      ctx.strokeStyle='#a9a17f';
+      ctx.beginPath();
+      for (let d=3.9; d<length; d+=3.9) {
+        const x=ax+(bx-ax)*d/length,z=az+(bz-az)*d/length;
+        ctx.moveTo(x-nx*2.72,z-nz*2.72);
+        ctx.lineTo(x+nx*2.72,z+nz*2.72);
+      }
+      ctx.stroke();
+      ctx.restore();
+      continue;
+    }
     ctx.beginPath();path(f.points);
     if (!walk || special) {
       ctx.strokeStyle=broad?'#9a9f8c':'#aeac8d';
@@ -430,7 +458,8 @@ function plantTrees(scene,geo,height,bounds,plantingExclusions) {
   for (const road of roads) for(let i=1;i<road.points.length;i++){
     const [x,z]=road.points[i-1], [x2,z2]=road.points[i], sx=x2-x,sz=z2-z;
     const count=Math.ceil(Math.hypot(sx,sz)/5);
-    for(let j=0;j<=count;j++){const t=j/Math.max(count,1);roadPoints.push([x+sx*t,z+sz*t,road.width/2+2.2]);}
+    const clearance=road.osm===wenliBoulevardId?6.3:road.width/2+2.2;
+    for(let j=0;j<=count;j++){const t=j/Math.max(count,1);roadPoints.push([x+sx*t,z+sz*t,clearance]);}
   }
   const cells=new Map();
   for (const p of roadPoints){

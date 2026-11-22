@@ -8,9 +8,9 @@ import {newDormIds} from './new-dorms.js';
 import {applyCampusRevisions} from './campus-revisions.js';
 import {facultyResidenceId} from './faculty-residence.js';
 import {mainGateId, secondGateId} from './gates.js';
-import {memorialHallId} from './memorial-hall.js';
 import {technologyBuildingId} from './technology-building.js';
-import {administrationId} from './dorms.js';
+import {administrationBuildingId} from './west-admin.js';
+import {alumniBellId, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
 
 const root=document.getElementById('tunghai-campus');
 const el=selector=>root.querySelector(selector);
@@ -26,6 +26,7 @@ const requestedView=(()=>{
 })();
 let selected=places[0];
 let navigate=()=>{};
+const aerialLinks=new Map();
 
 for (const [index,zone] of zones.entries()) {
   const group=document.createElement('optgroup');
@@ -47,6 +48,14 @@ function writeDetails(place) {
   el('.thu-english').textContent=place.english;
   el('.thu-description').textContent=place.description;
   el('.thu-place-source').href=place.source;
+  writeAerialLink(place);
+}
+function writeAerialLink(place) {
+  const link=el('.thu-place-aerial');
+  const href=aerialLinks.get(place.id);
+  link.hidden=!href;
+  if (href) link.href=href;
+  else link.removeAttribute('href');
 }
 function choose(place,move=true){
   writeDetails(place);
@@ -96,6 +105,17 @@ function init({geo:sourceGeo,terrain,chapel}) {
   const {height,board,byId,hits}=makeWorld(scene,geo,terrain,chapel);
 
   const coordinates=new Map([...geo.buildings,...geo.land,...geo.pois].map(f=>[f.osm,f]));
+  const [originLon,originLat]=geo.origin;
+  const metresPerDegreeLon=111320*Math.cos(originLat*Math.PI/180);
+  for (const place of places) {
+    const point=coordinates.get(place.id);
+    if (!place.aerialHeight || !point) continue;
+    const {aerialHeight}=place;
+    const latitude=originLat-(point.z+aerialHeight*Math.tan(39.6*Math.PI/180))/110770;
+    const longitude=originLon+point.x/metresPerDegreeLon;
+    aerialLinks.set(place.id,`https://www.google.com/maps/@${latitude.toFixed(7)},${longitude.toFixed(7)},${aerialHeight}a,35y,39.6t/data=!3m1!1e3`);
+  }
+  writeAerialLink(selected);
   const markers=places.flatMap(place=>{
     const point=coordinates.get(place.id);
     if(!point) return [];
@@ -131,18 +151,41 @@ function init({geo:sourceGeo,terrain,chapel}) {
   let state={x:board.x,y:76,z:board.z,az:orbit.az,el:orbit.el,size:1};
   let tween=null, frame=0, overview=true, focusActive=false;
   const active=new Map();
-  const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId, ...newDormIds, mainGateId, secondGateId, memorialHallId, technologyBuildingId, administrationId]);
+  const detailedLandmarks = new Set([fineArtsId, provincialBuildingId, activityCenterId, facultyResidenceId,
+    alumniBellId, wenliBoulevardId, ...newDormIds, ...wenliCourtyards.map(court=>court.id), ...aerialLinks.keys(),
+    mainGateId, secondGateId, technologyBuildingId, administrationBuildingId]);
   const closeAngles = {
     [mainGateId]:{az:2.72,el:.46},
-    [memorialHallId]:{az:1.25,el:.42},
     [technologyBuildingId]:{az:-1.35,el:.45},
-    [administrationId]:{az:.45,el:.55},
+    [administrationBuildingId]:{az:.45,el:.55},
     [secondGateId]:{az:2.62,el:.5},
     w227101621:{az:.72,el:.49},
     [fineArtsId]:{az:1.03,el:.43},
     [provincialBuildingId]:{az:2.49,el:.48},
     [activityCenterId]:{az:2.76,el:.48},
     [facultyResidenceId]:{az:.14,el:.47},
+    [alumniBellId]:{az:1.13,el:.34},
+    [wenliBoulevardId]:{az:.03,el:.94},
+    w368071581:{az:.34,el:.60},
+    w368249647:{az:-.84,el:.74},
+    w368071586:{az:2.62,el:.71},
+    w368071570:{az:.34,el:.65},
+    w368071571:{az:.34,el:.65},
+    w368071585:{az:2.74,el:.65},
+    w368304680:{az:2.74,el:.65},
+    w367195923:{az:.95,el:.43},
+    w367196899:{az:1.14,el:.62},
+    w367195941:{az:1.29,el:.45}, // entrance faces east, like the library's
+    w368066316:{az:1.50,el:.62},
+    w368304652:{az:.40,el:.40},
+    w227103239:{az:-2.75,el:.38},
+    w227106503:{az:-1.22,el:.54},
+    w227104642:{az:-1.25,el:.47},
+    w1309048743:{az:-1.2,el:.46},
+    w227111396:{az:.36,el:.49},
+    w367193104:{az:1.1,el:.68},
+    w227124380:{az:.14,el:.40},
+    w367762370:{az:.24,el:.55},
     r5467507:{az:.04,el:.94},
     [newDormIds[0]]:{az:2.86,el:.50},
     [newDormIds[1]]:{az:2.86,el:.50},

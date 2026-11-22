@@ -1,21 +1,13 @@
 import * as T from 'three';
 import {paint} from './kit.js';
 
-// Low-rise and dormitory buildings drawn in a few campus styles.
-//
-// Student dormitories: exteriors follow the NLSC 2024 orthophoto (roof colour, ridge
-// lines, rooftop solar arrays) and published photographs: the early men's dorms are
+// Student dormitories, drawn in a few campus styles. Exteriors follow the NLSC 2024
+// orthophoto (roof colour, ridge lines, rooftop solar arrays) and published
+// photographs: the early men's dorms are
 // exposed red brick under grey tiled hipped roofs with deep eaves; the women's dorms
 // are white plaster with dark timber balcony corridors under grey tiled roofs; the
 // later mid- and high-rise blocks have pale render, ribbon windows and flat roofs.
 // Floor counts use OpenStreetMap building:levels where tagged, otherwise FLOORS below.
-//
-// 行政大樓: the administration complex opposite 校長室, housing 總務處, 學生事務處, 教務處,
-// 會計室 and 勞作教育處. OpenStreetMap maps its wings as separate buildings. Like the
-// early administration buildings in the heritage photographs, it has white walls in a
-// dark timber frame under grey tiled hipped roofs.
-export const administrationId = 'administration-building';
-export const administrationWings = ['w368283835', 'w368283836', 'w368283837', 'w368283838', 'w368283840'];
 
 // 宿舍32、33棟 have their own detailed model (new-dorms.js).
 const SEPARATE = new Set(['w1344753003', 'w1344753007']);
@@ -38,10 +30,6 @@ const STYLES = {
     wall: '#efede6', band: '#d6d2c6', roof: '#5a605d', glass: '#3f4b4d', frame: '#8a8f8b',
     floorHeight: 3.2, roofType: 'hip',
   },
-  timber: {
-    wall: '#efebe0', band: '#4b3a2c', roof: '#5a605d', glass: '#3a4547', frame: '#4b3a2c',
-    floorHeight: 3.4, roofType: 'hip', posts: true,
-  },
   modern: {
     wall: '#e4e1d7', band: '#c8c4b7', roof: '#9fa49f', glass: '#55666b', frame: '#7c8481',
     floorHeight: 3.1, roofType: 'flat',
@@ -50,9 +38,8 @@ const STYLES = {
 
 const NAME = /^(男生|女生)?宿舍(\d+)棟/;
 
-// Returns {style, floors, solar, place} for a styled building footprint, or null.
+// Returns {style, floors, solar} for a styled building footprint, or null.
 export function styledBuildingSpec(building) {
-  if (administrationWings.includes(building.osm)) return {style: 'timber', floors: 2, place: administrationId};
   if (SEPARATE.has(building.osm)) return null;
   const match = building.name.match(NAME);
   if (!match) return null;
@@ -206,10 +193,6 @@ export function styledBuilding(footprint, terrainHeight, spec, batch) {
         on(along, y, .04, width + .22, 1.62, .1, frame);
         on(along, y, .09, width, 1.42, .08, glass);
       }
-    }
-    if (style.posts) {
-      // Exposed timber frame: a post between every bay, full height.
-      for (let bay = 0; bay <= bays; bay++) on(bay * span, eave / 2, .1, .24, eave, .16, band);
     }
     if (edge === balconyEdge) {
       for (let floor = 1; floor < spec.floors; floor++) {
