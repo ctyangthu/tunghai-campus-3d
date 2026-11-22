@@ -8,6 +8,7 @@ import {styledBuilding, styledBuildingSpec} from './dorms.js';
 import {createBoxBatch} from './kit.js';
 import {technologyBuilding, technologyBuildingId} from './technology-building.js';
 import {addGates} from './gates.js';
+import {addCarbonPark, carbonParkId} from './carbon-park.js';
 import {alumniBellId, alumniBellTower, courtyardWing, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
 import {northernLandmarks} from './northern-landmarks.js';
 import {westAdminLandmarks} from './west-admin.js';
@@ -294,6 +295,10 @@ export function makeWorld(scene, geo, terrain, chapel) {
   hits.push(...gates.pickables);
   plantingExclusions.push(...gates.exclusions);
   for (const [id, top] of gates.tops) byId.set(id, top + 2.5);
+  const carbonPark = addCarbonPark(scene, height);
+  hits.push(...carbonPark.pickables);
+  plantingExclusions.push(...carbonPark.exclusions);
+  byId.set(carbonParkId, carbonPark.top + 2.5);
 
   const alumniBell=geo.pois.find(p=>p.osm===alumniBellId);
   if(alumniBell){
