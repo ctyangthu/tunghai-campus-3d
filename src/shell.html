@@ -1,49 +1,52 @@
 <section id="tunghai-campus" aria-labelledby="thu-title">
   <header class="thu-header">
     <div>
-      <p class="thu-eyebrow">TUNGHAI UNIVERSITY <span></span> 臺中・大肚山</p>
-      <h1 id="thu-title">東海大學 <span>3D 校園</span></h1>
+      <p class="thu-eyebrow">TUNGHAI UNIVERSITY <span></span> {{eyebrowPlace}}</p>
+      <h1 id="thu-title">{{titleMain}} <span>{{titleSub}}</span></h1>
     </div>
-    <div class="thu-view" role="group" aria-label="校園視角">
-      <button class="btn" type="button" data-view="orbit" aria-pressed="true">3D 鳥瞰</button>
-      <button class="btn" type="button" data-view="top" aria-pressed="false">正北俯視</button>
+    <div class="thu-header-tools">
+      <a class="btn thu-lang" href="{{otherHref}}" hreflang="{{otherLang}}" lang="{{otherLang}}" title="{{otherTitle}}">{{otherLabel}}</a>
+      <div class="thu-view" role="group" aria-label="{{viewGroup}}">
+        <button class="btn" type="button" data-view="orbit" aria-pressed="true">{{viewOrbit}}</button>
+        <button class="btn" type="button" data-view="top" aria-pressed="false">{{viewTop}}</button>
+      </div>
     </div>
   </header>
   <div class="thu-layout">
-    <div class="thu-map" aria-label="東海大學互動立體地圖">
+    <div class="thu-map" aria-label="{{mapLabel}}">
       <div class="thu-canvas"></div>
       <div class="thu-labels"></div>
-      <div class="thu-compass" aria-label="北方指示"><span>北</span><i></i></div>
-      <div class="thu-map-controls" role="group" aria-label="操作地圖">
-        <button class="btn" type="button" data-action="in" aria-label="放大">＋</button>
-        <button class="btn" type="button" data-action="out" aria-label="縮小">−</button>
-        <button class="btn" type="button" data-action="home" aria-label="回到全校視角">⌂</button>
+      <div class="thu-compass" aria-label="{{compassLabel}}"><span>{{compass}}</span><i></i></div>
+      <div class="thu-map-controls" role="group" aria-label="{{controlsLabel}}">
+        <button class="btn" type="button" data-action="in" aria-label="{{zoomIn}}">＋</button>
+        <button class="btn" type="button" data-action="out" aria-label="{{zoomOut}}">−</button>
+        <button class="btn" type="button" data-action="home" aria-label="{{home}}">⌂</button>
       </div>
       <div class="thu-map-footer">
-        <p class="thu-help">拖曳旋轉 · 滾輪縮放 · Shift＋拖曳平移</p>
+        <p class="thu-help">{{help}}</p>
         <p class="thu-scale"><span></span><b>100 m</b></p>
       </div>
-      <p class="thu-error" role="alert" hidden>瀏覽器目前無法顯示 WebGL 地圖。下方仍可瀏覽校園地標。</p>
+      <p class="thu-error" role="alert" hidden>{{error}}</p>
     </div>
     <aside class="thu-sidebar">
-      <h2 class="thu-panel-title">地標導覽</h2>
-      <label class="thu-picker-label" for="thu-destination">前往地標</label>
+      <h2 class="thu-panel-title">{{panelTitle}}</h2>
+      <label class="thu-picker-label" for="thu-destination">{{picker}}</label>
       <select class="form-select" id="thu-destination"></select>
       <article class="thu-detail" aria-live="polite">
         <p class="thu-area"></p>
         <h3 class="thu-place"></h3>
-        <p class="thu-english" lang="en"></p>
+        <p class="thu-english" lang="{{subtitleLang}}"></p>
         <p class="thu-description"></p>
         <div class="thu-detail-links">
-          <a class="thu-place-source" href="https://thupr.thu.edu.tw/traffic.php" target="_blank" rel="noopener noreferrer">地標資料 ↗</a>
-          <a class="thu-place-aerial" target="_blank" rel="noopener noreferrer" hidden>Google Maps 鳥瞰 ↗</a>
+          <a class="thu-place-source" href="https://thupr.thu.edu.tw/traffic.php" target="_blank" rel="noopener noreferrer">{{source}}</a>
+          <a class="thu-place-aerial" target="_blank" rel="noopener noreferrer" hidden>{{aerial}}</a>
         </div>
       </article>
-      <button type="button" class="btn thu-focus" data-action="focus">飛往此地標 <span aria-hidden="true">↗</span></button>
+      <button type="button" class="btn thu-focus" data-action="focus">{{focus}} <span aria-hidden="true">↗</span></button>
     </aside>
   </div>
   <footer class="thu-sources">
-    <p>地形依高程資料重建，建物高度、外觀與植栽採近似建模。</p>
-    <p><a href="https://thupr.thu.edu.tw/traffic.php" target="_blank" rel="noopener noreferrer">東海大學校園圖</a><span>·</span><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a><span>·</span><a href="data/campus-geo.json" download>地圖資料（ODbL）</a><span>·</span><a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener noreferrer">Mapzen／USGS 高程</a></p>
+    <p>{{note}}</p>
+    <p><a href="https://thupr.thu.edu.tw/traffic.php" target="_blank" rel="noopener noreferrer">{{campusMap}}</a><span>·</span><a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">© OpenStreetMap contributors</a><span>·</span><a href="{{dataPath}}" download>{{mapData}}</a><span>·</span><a href="https://registry.opendata.aws/terrain-tiles/" target="_blank" rel="noopener noreferrer">{{elevation}}</a></p>
   </footer>
 </section>

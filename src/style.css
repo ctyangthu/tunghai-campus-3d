@@ -22,6 +22,10 @@
 #tunghai-campus h1 { font-family: "Songti TC", "Noto Serif TC", "PMingLiU", serif; font-weight: 500; font-size: clamp(1.75rem, 4vw, 2.55rem); line-height: 1.2; margin-top: 5px; letter-spacing: .03em; }
 #tunghai-campus h1 span { color: var(--thu-soft); font-family: system-ui, sans-serif; font-weight: 400; font-size: .51em; letter-spacing: .07em; white-space: nowrap; }
 #tunghai-campus .thu-view, #tunghai-campus .thu-map-controls { display: flex; gap: 4px; align-items: center; }
+#tunghai-campus .thu-header-tools { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+#tunghai-campus .thu-lang { white-space: nowrap; text-decoration: none; }
+#tunghai-campus:lang(en) h1 { font-family: Georgia, "Times New Roman", serif; letter-spacing: 0; }
+#tunghai-campus:lang(en) .thu-eyebrow { letter-spacing: .1em; }
 #tunghai-campus button, #tunghai-campus select { font-family: inherit; }
 #tunghai-campus .thu-view .btn { white-space: nowrap; }
 #tunghai-campus .thu-layout { display: grid; grid-template-columns: minmax(0,1fr) minmax(174px,25%); align-items: stretch; gap: 18px; }

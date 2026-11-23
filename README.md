@@ -1,8 +1,10 @@
 # 東海大學 3D 校園
 
-互動導覽涵蓋臺中東海大學的第一、第二教學區，可旋轉、縮放並選取 85 處地標。地標名稱、編號與分區依東海大學校園地圖。
+互動導覽涵蓋臺中東海大學的第一、第二教學區，可旋轉、縮放並選取 90 處地標。地標名稱、編號與分區依東海大學校園地圖。
 
-- [開啟 3D 校園](https://ctyangthu.github.io/tunghai-campus-3d/)
+An English version is at [/en/](https://ctyangthu.github.io/tunghai-campus-3d/en/): the same 3D campus with English interface, landmark names and descriptions.
+
+- [開啟 3D 校園](https://ctyangthu.github.io/tunghai-campus-3d/) · [English version](https://ctyangthu.github.io/tunghai-campus-3d/en/)
 - [近看文理大道](https://ctyangthu.github.io/tunghai-campus-3d/?place=w367700897)
 - [近看校友鐘樓](https://ctyangthu.github.io/tunghai-campus-3d/?place=n2358488959)
 - [近看美術系館](https://ctyangthu.github.io/tunghai-campus-3d/?place=w367198636)
@@ -26,13 +28,13 @@
 
 ## 建置
 
-執行 `npm ci` 和 `npm run build`，然後以支援 WebGL 2 的瀏覽器開啟 `docs/index.html`。
+執行 `npm ci` 和 `npm run build`，然後以支援 WebGL 2 的瀏覽器開啟 `docs/index.html`（中文）或 `docs/en/index.html`（英文）。
 
-`docs/index.html` 是建置產物，不納入版本控制。GitHub Actions（`.github/workflows/pages.yml`）在每次推送到 `main` 時重新建置，並把 `docs/` 發布到 GitHub Pages；pull request 只建置不發布。儲存庫的 Settings → Pages → Build and deployment 的 Source 須設為「GitHub Actions」。
+`docs/index.html` 與 `docs/en/index.html` 是建置產物，不納入版本控制。GitHub Actions（`.github/workflows/pages.yml`）在每次推送到 `main` 時重新建置，並把 `docs/` 發布到 GitHub Pages；pull request 只建置不發布。儲存庫的 Settings → Pages → Build and deployment 的 Source 須設為「GitHub Actions」。
 
 ## 資料產生
 
-`npm run build` 只把 `src/` 與三個資料檔打包成 `docs/index.html`。資料檔由 `scripts/` 內的腳本重建，需要 Node.js 22 以上。下載的原始資料暫存在 `.cache/`，不納入版本控制。
+`npm run build` 只把 `src/` 與資料檔打包成 `docs/index.html` 與 `docs/en/index.html`，兩頁共用同一份程式，各自以 `__LANG__` 編譯。介面文字在 `src/i18n.js`，地標的英文說明與分區在 `src/places-en.js`；新增地標時須同時補上英文說明，否則建置會失敗。資料檔由 `scripts/` 內的腳本重建，需要 Node.js 22 以上。下載的原始資料暫存在 `.cache/`，不納入版本控制。
 
 | 資料檔 | 指令 | 來源 | 與目前發布版比對 |
 | --- | --- | --- | --- |

@@ -1,5 +1,6 @@
 import * as T from 'three';
 import {defaultPlaceId,places,zones} from './places.js';
+import {ui} from './i18n.js';
 import {makeWorld} from './scene.js';
 import {fineArtsId} from './fine-arts.js';
 import {provincialBuildingId} from './provincial-building.js';
@@ -37,7 +38,7 @@ for (const [index,zone] of zones.entries()) {
   for(const p of places.filter(p=>p.zone===index)){
     const item=document.createElement('option');
     item.value=p.id;
-    item.textContent=p.number?`${p.number}　${p.name}`:p.name;
+    item.textContent=ui.option(p);
     group.append(item);
   }
   select.append(group);
@@ -46,12 +47,19 @@ for (const [index,zone] of zones.entries()) {
 function writeDetails(place) {
   selected=place;
   select.value=place.id;
-  el('.thu-area').textContent=place.number?`${zones[place.zone]} · 校園地圖 ${place.number}`:zones[place.zone];
+  el('.thu-area').textContent=ui.area(zones[place.zone],place.number);
   el('.thu-place').textContent=place.name;
   el('.thu-english').textContent=place.english;
   el('.thu-description').textContent=place.description;
   el('.thu-place-source').href=place.source;
   writeAerialLink(place);
+  writeLanguageLink(place);
+}
+// The link to the other language keeps the selected place.
+const languageLink=el('.thu-lang');
+const languageBase=languageLink?.getAttribute('href');
+function writeLanguageLink(place) {
+  if(languageLink) languageLink.href=`${languageBase}?place=${encodeURIComponent(place.id)}`;
 }
 function writeAerialLink(place) {
   const link=el('.thu-place-aerial');
@@ -64,7 +72,7 @@ function choose(place,move=true){
   writeDetails(place);
   if(move) navigate(place);
   if(move && window.openai?.setWidgetState){
-    window.openai.setWidgetState({modelContent:{地標:place.name},privateContent:{selected:place.id}}).catch(()=>{});
+    window.openai.setWidgetState({modelContent:{[ui.widgetKey]:place.name},privateContent:{selected:place.id}}).catch(()=>{});
   }
 }
 select.addEventListener('change',()=>choose(places.find(p=>p.id===select.value)));
@@ -91,7 +99,7 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
   renderer.shadowMap.type=T.PCFShadowMap;
   const canvas=renderer.domElement;
   canvas.setAttribute('role','img');
-  canvas.setAttribute('aria-label','東海大學兩個教學區的立體地形、道路與建築');
+  canvas.setAttribute('aria-label',ui.canvas);
   el('.thu-canvas').append(canvas);
 
   const scene=new T.Scene();
@@ -286,7 +294,7 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
       button.setAttribute('aria-pressed',String(pressed));
       button.classList.toggle('btn-primary',pressed);
     }
-    help.textContent=view==='top'?'拖曳平移 · 滾輪縮放':matchMedia('(pointer: coarse)').matches?'拖曳旋轉 · 雙指縮放和平移':'拖曳旋轉 · 滾輪縮放 · Shift＋拖曳平移';
+    help.textContent=view==='top'?ui.helpTop:matchMedia('(pointer: coarse)').matches?ui.helpTouch:ui.helpMouse;
   }
   function showOverview(){
     overview=true;

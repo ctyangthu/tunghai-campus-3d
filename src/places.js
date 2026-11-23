@@ -1,3 +1,6 @@
+import {english} from './i18n.js';
+import {englishDescriptions, englishZones} from './places-en.js';
+
 const campusMap = 'https://thupr.thu.edu.tw/traffic.php';
 const walks = 'https://fineart.thu.edu.tw/web/visit/page.php?scid=44&sid=72';
 const earlyCampus = 'https://www.tchac.taichung.gov.tw/historybuilding?pid=252&uid=37';
@@ -12,10 +15,11 @@ const farm = 'https://thufarm.thu.edu.tw/tw/%E8%AA%8D%E8%AD%98%E7%89%A7%E5%A0%B4
 // are grouped at the end. One building can hold several legend units; the
 // description lists them. featured: 1 shows the label in the overview, 2 gives it
 // priority there.
-export const zones = ['教學行政區', '生活機能區', '附屬學校區', '學生宿舍及教職員宿舍區', '其他區', '校門與景點'];
+export const chineseZones = ['教學行政區', '生活機能區', '附屬學校區', '學生宿舍及教職員宿舍區', '其他區', '校門與景點'];
+export const zones = english ? englishZones : chineseZones;
 export const defaultPlaceId = 'w227101621';
 
-export const places = [
+export const chinesePlaces = [
   // 教學行政區 Academic & Administration Area
   ['w367195923',0,1,'社會科學院','College of Social Sciences','深灰坡頂分覆各翼。可見混凝土柱梁、紅磚端牆、成列窗格與開敞走廊，地下樓層設有芳華廳。','https://sosc.thu.edu.tw/',0,150,240],
   ['w367196899',0,2,'圖書館','Library','圖書館與圖書暨資訊處所在。地上四層採回字形配置，橘棕色坡頂與青綠色屋面帶環繞中央天井，入口柱廊朝東面向文理大道。','https://lis.thu.edu.tw/web/building/page.php?lang=zh_tw&scid=21&sid=35',1,120,190],
@@ -119,6 +123,13 @@ export const places = [
   ['w1507803521',5,null,'小王子玫瑰園','The Little Prince Rose Garden','東海大學與古典玫瑰園合作的玫瑰園，2025 年校慶揭幕。兩朵玫瑰造型的花圃以碎石步道盤旋到花心，旁有葉片造型的銀綠色花圃，南、西兩側圍著綠籬。',park,0,105],
 ].map(([id,zone,number,name,english,description,source,featured,width,aerialHeight]) =>
   ({id,zone,number,name,english,description,source,featured,width,aerialHeight}));
+
+// The places as the page shows them. On the English page the English name leads and
+// the Chinese name becomes the subtitle; `english` always holds the subtitle.
+export const places = english
+  ? chinesePlaces.map(place => ({...place, name: place.english, english: place.name,
+    description: englishDescriptions[place.id] ?? place.description}))
+  : chinesePlaces;
 
 // Label points. Legend entries without a building outline get a point of their own;
 // grouped buildings (courtyards, pairs) get one at the centre of the group, where the
