@@ -1,4 +1,4 @@
-# Builds docs/index.html from src/ and the data files, then publishes docs/ to
+# Builds docs/index.html and docs/en/index.html from src/ and the data files, then publishes docs/ to
 # GitHub Pages. Pull requests only build, so a broken build shows up before merging.
 # Requires Settings → Pages → Build and deployment → Source: GitHub Actions.
 name: Build and deploy
@@ -32,7 +32,10 @@ jobs:
         run: |
           test -s docs/index.html
           grep -q 'id="thu-campus-data"' docs/index.html
-          ls -l docs/index.html docs/data/campus-geo.json
+          test -s docs/en/index.html
+          grep -q '<html lang="en">' docs/en/index.html
+          grep -q 'id="thu-campus-data"' docs/en/index.html
+          ls -l docs/index.html docs/en/index.html docs/data/campus-geo.json
       - uses: actions/upload-pages-artifact@v5
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:
