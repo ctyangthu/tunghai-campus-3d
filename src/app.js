@@ -83,6 +83,31 @@ window.addEventListener('openai:set_globals',event=>{
   if(previous) choose(previous,false);
 });
 
+// The landmark panel can be folded away so the map takes the whole width.
+const panelToggle=el('.thu-panel-toggle');
+panelToggle?.addEventListener('click',()=>{
+  const collapsed=root.classList.toggle('thu-panel-collapsed');
+  const label=collapsed?ui.panelShow:ui.panelHide;
+  panelToggle.setAttribute('aria-expanded',String(!collapsed));
+  panelToggle.setAttribute('aria-label',label);
+  panelToggle.title=label;
+});
+// Full screen for the whole app (map and panel); hidden where the browser cannot do it.
+const fullscreenButton=el('[data-action="fullscreen"]');
+if(fullscreenButton&&!document.fullscreenEnabled) fullscreenButton.hidden=true;
+function toggleFullscreen(){
+  if(document.fullscreenElement) document.exitFullscreen?.();
+  else root.requestFullscreen?.().catch(()=>{});
+}
+document.addEventListener('fullscreenchange',()=>{
+  if(!fullscreenButton) return;
+  const on=document.fullscreenElement===root;
+  const label=on?ui.exitFullscreen:ui.fullscreen;
+  fullscreenButton.setAttribute('aria-pressed',String(on));
+  fullscreenButton.setAttribute('aria-label',label);
+  fullscreenButton.title=label;
+});
+
 async function openData() {
   const encoded=document.getElementById('thu-campus-data').textContent.trim();
   const bytes=Uint8Array.from(atob(encoded),c=>c.charCodeAt(0));
@@ -366,6 +391,7 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
       case 'out': zoom(1.41); break;
       case 'home': showOverview(); break;
       case 'focus': navigate(selected); break;
+      case 'fullscreen': toggleFullscreen(); break;
       default: resetView(button.dataset.view);
     }
   });

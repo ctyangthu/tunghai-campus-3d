@@ -1,4 +1,4 @@
-<section id="tunghai-campus" aria-labelledby="thu-title">
+<section id="tunghai-campus" class="thu-app" aria-labelledby="thu-title">
   <header class="thu-header">
     <div>
       <p class="thu-eyebrow">TUNGHAI UNIVERSITY <span></span> {{eyebrowPlace}}</p>
@@ -16,11 +16,13 @@
     <div class="thu-map" aria-label="{{mapLabel}}">
       <div class="thu-canvas"></div>
       <div class="thu-labels"></div>
+      <button class="btn thu-panel-toggle" type="button" aria-controls="thu-sidebar" aria-expanded="true" aria-label="{{panelHide}}" title="{{panelHide}}"><svg viewBox="0 0 16 16" width="16" height="16" aria-hidden="true"><path d="M6 3l5 5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       <div class="thu-compass" aria-label="{{compassLabel}}"><span>{{compass}}</span><i></i></div>
       <div class="thu-map-controls" role="group" aria-label="{{controlsLabel}}">
         <button class="btn" type="button" data-action="in" aria-label="{{zoomIn}}">＋</button>
         <button class="btn" type="button" data-action="out" aria-label="{{zoomOut}}">−</button>
         <button class="btn" type="button" data-action="home" aria-label="{{home}}">⌂</button>
+        <button class="btn" type="button" data-action="fullscreen" aria-label="{{fullscreen}}" title="{{fullscreen}}" aria-pressed="false"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><path d="M2 6V2h4M10 2h4v4M14 10v4h-4M6 14H2v-4" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
       </div>
       <div class="thu-map-footer">
         <p class="thu-help">{{help}}</p>
@@ -28,7 +30,7 @@
       </div>
       <p class="thu-error" role="alert" hidden>{{error}}</p>
     </div>
-    <aside class="thu-sidebar">
+    <aside class="thu-sidebar" id="thu-sidebar">
       <h2 class="thu-panel-title">{{panelTitle}}</h2>
       <label class="thu-picker-label" for="thu-destination">{{picker}}</label>
       <select class="form-select" id="thu-destination"></select>

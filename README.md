@@ -2,6 +2,8 @@
 
 互動導覽涵蓋臺中東海大學的第一、第二教學區，可旋轉、縮放並選取 90 處地標。地標名稱、編號與分區依東海大學校園地圖。
 
+頁面採滿版配置：地圖填滿視窗，右側地標面板可用地圖右上角的按鈕收合，地圖控制列另有全螢幕按鈕；手機上地圖占滿寬度、約四分之三螢幕高度，地標面板在下方。
+
 An English version is at [/en/](https://ctyangthu.github.io/tunghai-campus-3d/en/): the same 3D campus with English interface, landmark names and descriptions.
 
 - [開啟 3D 校園](https://ctyangthu.github.io/tunghai-campus-3d/) · [English version](https://ctyangthu.github.io/tunghai-campus-3d/en/)
