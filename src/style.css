@@ -64,6 +64,40 @@
 #tunghai-campus .thu-focus span { margin-left: 3px; }
 #tunghai-campus .thu-sources { margin-top: 12px; color: var(--thu-soft); display: flex; flex-wrap: wrap; justify-content: space-between; gap: 4px 12px; font-size: .7rem; }
 #tunghai-campus .thu-sources p:last-child { display: flex; flex-wrap: wrap; gap: 2px 6px; }
+/* Full-page app (.thu-app): the map fills the window edge to edge under a slim header,
+   with the landmark panel as a column on the right that can be folded away. */
+#tunghai-campus.thu-app { background: var(--background, transparent); }
+#tunghai-campus.thu-app .thu-header { padding: 9px 18px 10px; align-items: center; }
+#tunghai-campus.thu-app h1 { font-size: clamp(1.4rem, 2.3vw, 1.9rem); margin-top: 1px; }
+#tunghai-campus.thu-app .thu-map { border-radius: 0; }
+#tunghai-campus.thu-app .thu-sidebar { padding: 16px 18px; }
+#tunghai-campus.thu-app .thu-sources { margin: 0; padding: 9px 18px 12px; }
+#tunghai-campus .thu-panel-toggle { display: none; }
+#tunghai-campus:fullscreen { width: 100%; height: 100%; overflow: auto; }
+@media (min-width: 901px) {
+  #tunghai-campus.thu-app { height: 100vh; height: 100dvh; display: grid; grid-template-columns: minmax(0,1fr) clamp(280px, 24vw, 360px); grid-template-rows: auto minmax(0,1fr) auto; grid-template-areas: "head head" "map side" "map foot"; }
+  #tunghai-campus.thu-app .thu-header { grid-area: head; border-bottom: 1px solid var(--thu-line); }
+  #tunghai-campus.thu-app .thu-layout { display: contents; }
+  #tunghai-campus.thu-app .thu-map { grid-area: map; height: auto; min-height: 0; }
+  #tunghai-campus.thu-app .thu-sidebar { grid-area: side; overflow-y: auto; border-left: 1px solid var(--thu-line); }
+  #tunghai-campus.thu-app .thu-sources { grid-area: foot; flex-direction: column; justify-content: end; border-left: 1px solid var(--thu-line); }
+  #tunghai-campus.thu-app .thu-panel-toggle { display: inline-flex; position: absolute; z-index: 4; top: 15px; right: 12px; width: 33px; height: 33px; padding: 0; box-shadow: 0 1px 6px #35544222; }
+  #tunghai-campus.thu-app.thu-panel-collapsed { grid-template-columns: minmax(0,1fr); grid-template-areas: "head" "map" "foot"; }
+  #tunghai-campus.thu-app.thu-panel-collapsed .thu-sidebar { display: none; }
+  #tunghai-campus.thu-app.thu-panel-collapsed .thu-sources { flex-direction: row; border-left: 0; border-top: 1px solid var(--thu-line); padding: 6px 18px; }
+  #tunghai-campus.thu-app.thu-panel-collapsed .thu-panel-toggle svg { transform: rotate(180deg); }
+}
+@media (max-width: 900px) {
+  #tunghai-campus.thu-app .thu-layout { grid-template-columns: minmax(0,1fr); gap: 0; }
+  #tunghai-campus.thu-app .thu-map { height: max(360px, 74vh); height: max(360px, 74svh); }
+  #tunghai-campus.thu-app .thu-header { padding: 10px 14px 11px; }
+  #tunghai-campus.thu-app .thu-sidebar { padding: 12px 14px; }
+  #tunghai-campus.thu-app .thu-sources { padding: 8px 14px 14px; }
+}
+@media (max-width: 680px) {
+  #tunghai-campus.thu-app .thu-eyebrow { display: none; }
+  #tunghai-campus.thu-app .thu-header { gap: 8px; }
+}
 @media (max-width: 680px) {
   #tunghai-campus .thu-layout { grid-template-columns: minmax(0,1fr); gap: 9px; }
   #tunghai-campus .thu-map { height: clamp(365px, 77vw, 465px); }

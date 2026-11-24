@@ -11,6 +11,7 @@ import {technologyBuilding, technologyBuildingId} from './technology-building.js
 import {addGates} from './gates.js';
 import {addCarbonPark, carbonParkId} from './carbon-park.js';
 import {addRoseGarden, roseGardenId} from './rose-garden.js';
+import {librarySite} from './library-model.js';
 import {placeAliases} from './places.js';
 import {alumniBellId, alumniBellTower, courtyardWing, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
 import {northernLandmarks} from './northern-landmarks.js';
@@ -129,6 +130,7 @@ export function makeWorld(scene, geo, terrain, chapel, roofColors = {}) {
     return materialCache.get(color);
   }
   const buildings = new T.Group();
+  const detailedGroups = new Map();
   const byId = new Map();
   const hits = [];
   const outdoorTrack = geo.land.find(area=>area.osm==='r5467507');
@@ -175,6 +177,7 @@ export function makeWorld(scene, geo, terrain, chapel, roofColors = {}) {
     if (makeDetailedBuilding) {
       const refined = makeDetailedBuilding(f, height);
       buildings.add(refined.group);
+      detailedGroups.set(f.osm, refined);
       hits.push(...refined.pickables);
       const alias = placeAliases[f.osm];
       if (alias) {
@@ -322,6 +325,7 @@ export function makeWorld(scene, geo, terrain, chapel, roofColors = {}) {
   const roseGarden = addRoseGarden(scene, surface, geo.land.find(f => f.osm === roseGardenId)?.points);
   hits.push(...roseGarden.pickables);
   plantingExclusions.push(...roseGarden.exclusions);
+  plantingExclusions.push(librarySite);
   byId.set(roseGardenId, roseGarden.top + 2.5);
 
   const alumniBell=geo.pois.find(p=>p.osm===alumniBellId);
@@ -333,7 +337,7 @@ export function makeWorld(scene, geo, terrain, chapel, roofColors = {}) {
   }
 
   plantTrees(scene,geo,height,bounds,plantingExclusions);
-  return {height,board,byId,hits};
+  return {height,board,byId,hits,detailedGroups};
 }
 
 function groundTexture(geo,bounds,height) {
