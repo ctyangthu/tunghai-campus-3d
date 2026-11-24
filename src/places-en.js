@@ -9,7 +9,7 @@ export const englishZones = ['Teaching & Administration', 'Campus Life', 'Affili
 export const englishDescriptions = {
   // Teaching & Administration
   w367195923: 'Dark grey pitched roofs cover each wing. Concrete columns and beams, red-brick end walls, rows of window grids and open corridors are visible; Fanghua Hall (芳華廳) is on the basement level.',
-  w367196899: 'Home of the library and the Office of Library and Information Services. Four storeys are arranged around a central atrium under orange-brown pitched roofs and a turquoise roof band; the entrance colonnade faces east onto Wenli Boulevard.',
+  w367196899: 'Home of the library and the Office of Library and Information Services. Four storeys are arranged around a central atrium under orange-brown pitched roofs and a turquoise roof band with solar panels; the entrance colonnade faces east onto Wenli Boulevard. The 3D model is the main library from the Tunghai University campus building models (gis.th-thu.com).',
   w1302996436: 'Houses the Department of Applied Physics, the Department of Computer Science and the Library and Information Services help desk (basement level 1), with a tiered lecture hall on the fifth floor. It faces the CKS Memorial Auditorium across a plaza; the model’s floor count and facade details are approximate.',
   'sustainability-office': 'In the south-west part of the Alumni House complex. The campus map labels it separately from the Alumni House, while the map data includes it in the Alumni House outline, so clicking the building selects the Alumni House.',
   w227101080: 'Building of the Department of Architecture, on the north side of the First Teaching Area, with the Industrial Design building to the east.',

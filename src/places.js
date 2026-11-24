@@ -22,7 +22,7 @@ export const defaultPlaceId = 'w227101621';
 export const chinesePlaces = [
   // 教學行政區 Academic & Administration Area
   ['w367195923',0,1,'社會科學院','College of Social Sciences','深灰坡頂分覆各翼。可見混凝土柱梁、紅磚端牆、成列窗格與開敞走廊，地下樓層設有芳華廳。','https://sosc.thu.edu.tw/',0,150,240],
-  ['w367196899',0,2,'圖書館','Library','圖書館與圖書暨資訊處所在。地上四層採回字形配置，橘棕色坡頂與青綠色屋面帶環繞中央天井，入口柱廊朝東面向文理大道。','https://lis.thu.edu.tw/web/building/page.php?lang=zh_tw&scid=21&sid=35',1,120,190],
+  ['w367196899',0,2,'圖書館','Library','圖書館與圖書暨資訊處所在。地上四層採回字形配置，橘棕色坡頂與青綠色屋面帶環繞中央天井，屋脊平台設有太陽光電，入口柱廊朝東面向文理大道。立體模型取自東海大學校園建築模型的圖書總館（gis.th-thu.com）。','https://lis.thu.edu.tw/web/building/page.php?lang=zh_tw&scid=21&sid=35',1,120,190],
   ['w1302996436',0,3,'大智慧科技大樓','Science & Technology Building','應用物理系、資訊工程學系與圖資處服務台（地下一樓）等單位設於此，五樓有階梯教室。與中正紀念堂隔著廣場相對；模型的樓層數與立面細部為近似。','https://www.cs.thu.edu.tw/web/page/page.php?lang=zh_tw&scid=18&sid=12',0,120],
   ['sustainability-office',0,4,'永續發展辦公室','Sustainable Development Office','位於校友會館建築群的西南側。校園地圖將它與校友會館分開標示，地圖資料則併入校友會館的輪廓，點選建物會選到校友會館。','https://sustainable.thu.edu.tw/',0,70],
   ['w227101080',0,5,'建築系館','Dept. of Architecture Building','建築學系的系館，位於第一教學區北側，東鄰工業設計系館。',campusMap,0,80],

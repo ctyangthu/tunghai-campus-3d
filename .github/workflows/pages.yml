@@ -35,7 +35,8 @@ jobs:
           test -s docs/en/index.html
           grep -q '<html lang="en">' docs/en/index.html
           grep -q 'id="thu-campus-data"' docs/en/index.html
-          ls -l docs/index.html docs/en/index.html docs/data/campus-geo.json
+          test -s docs/models/thu-library.glb
+          ls -l docs/index.html docs/en/index.html docs/data/campus-geo.json docs/models/thu-library.glb
       - uses: actions/upload-pages-artifact@v5
         if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
         with:

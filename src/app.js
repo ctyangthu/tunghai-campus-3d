@@ -13,6 +13,7 @@ import {technologyBuildingId} from './technology-building.js';
 import {administrationCenterId} from './west-admin.js';
 import {carbonParkId} from './carbon-park.js';
 import {roseGardenId} from './rose-garden.js';
+import {libraryCovers, libraryId, libraryModelPath, loadLibraryModel} from './library-model.js';
 import {alumniBellId, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
 
 const root=document.getElementById('tunghai-campus');
@@ -138,7 +139,7 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
   shadow.normalBias=2.5;
   shadow.bias=-.00028;
   scene.add(sun);
-  const {height,board,byId,hits}=makeWorld(scene,geo,terrain,chapel,roofColors);
+  const {height,board,byId,hits,detailedGroups}=makeWorld(scene,geo,terrain,chapel,roofColors);
 
   const coordinates=new Map([...geo.buildings,...geo.land,...geo.pois].map(f=>[f.osm,f]));
   const [originLon,originLat]=geo.origin;
@@ -464,6 +465,41 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
   renderer.shadowMap.needsUpdate=true;
   root.dataset.ready='true';
   requestDraw();
+
+  // Swap in the detailed library model once it has downloaded; the hand-built one
+  // stays if it cannot be loaded. Browsers do not fetch files for a page opened from
+  // disk, so there the hand-built library is kept without trying.
+  const libraryUrl=new URL((root.dataset.assetBase??'')+libraryModelPath,document.baseURI).href;
+  const libraryModel=location.protocol==='file:'?Promise.reject(new Error('page opened from disk')):loadLibraryModel(libraryUrl,height);
+  libraryModel.then(model=>{
+    const old=detailedGroups.get(libraryId);
+    if(old){
+      old.group.removeFromParent();
+      for(const mesh of old.pickables){
+        const index=hits.indexOf(mesh);
+        if(index>=0) hits.splice(index,1);
+      }
+    }
+    const covered=[];
+    scene.traverse(object=>{if(libraryCovers.includes(object.userData.osm)) covered.push(object);});
+    for(const object of covered){
+      object.removeFromParent();
+      object.traverse(mesh=>{
+        const index=hits.indexOf(mesh);
+        if(index>=0) hits.splice(index,1);
+      });
+    }
+    scene.add(model.group);
+    hits.push(...model.pickables);
+    const marker=markers.find(m=>m.place.id===libraryId);
+    if(marker) marker.y=model.top+2.5;
+    renderer.shadowMap.needsUpdate=true;
+    requestDraw();
+    root.dataset.library='loaded';
+  }).catch(error=>{
+    if(location.protocol!=='file:') console.warn('Library model not loaded:',error);
+    root.dataset.library='failed';
+  });
 }
 openData().then(init).catch(error=>{
   console.error(error);
