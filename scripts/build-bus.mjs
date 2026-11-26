@@ -18,8 +18,11 @@ const STOPS = {
   'girls-dorm': {zh: '女舍陽光草坪', en: 'Women’s Residences, Sunshine Lawn', at: [-298.2, 47.7]}, // OSM n3716494690
   'green-heart': {zh: '綠之心（乳品小棧）', en: 'Green Heart (Dairy Shop)', at: [59.6, -55.8]},   // OSM n13132325690
   'farm-lake': {zh: '農牧場東海湖', en: 'Tunghai Farm & Lake', at: [465.1, -92]},               // OSM n3716507503
-  'second-dorms': {zh: '第二教學區學生宿舍', en: 'Second Teaching Area Residences', at: [708.9, -89.4]}, // OSM n3716507505
-  'management': {zh: '管理學院', en: 'College of Management', at: [724.2, -414.2]},             // OSM n3716507507
+  // The next two follow the university's live bus map: the residences stop on the road
+  // north of 73棟 (OSM n3716507505 is 40 m east), 管理學院 at the 力行路 junction east of
+  // the college (OSM n3716507507 is 40 m west).
+  'second-dorms': {zh: '第二教學區學生宿舍', en: 'Second Teaching Area Residences', at: [667, -91.6]},
+  'management': {zh: '管理學院', en: 'College of Management', at: [765, -411]},
   'mens-dorm-15': {zh: '男舍15棟', en: 'Men’s Residence 15', at: [-229.9, -99.2]},              // OSM n3716494683
   'languages': {zh: '語文館北側', en: 'Languages Building (north)', at: [-559.9, -165.6]},        // OSM n3716494688
   'technology': {zh: '科技大樓', en: 'Science & Technology Building', at: [-813.5, -273.5]},     // OSM n3716507502
@@ -29,12 +32,15 @@ const STOPS = {
 // `via` pins a leg to the roads the bus actually takes where the shortest path differs:
 // route 1 runs up 約農路 west of the chapel lawn to 德耀路, down 篤信路 past 女舍陽光草坪,
 // and stays on 篤信路 before turning north to 銘賢路 (as marked by the university).
+// `skip` drops a timetable stop the bus does not pass: on the live bus map route 1 turns
+// north at 農牧場東海湖 up 力行路 straight to 管理學院 (its 7th stop there), so it does not
+// call at the second-area residences on the southern road, which route 2 serves.
 const ROUTES = [
-  {id: 1, key: 'down', zh: '社科院 → 管理學院', en: 'Social Sciences → Management', color: '#d9792b', via: {
+  {id: 1, key: 'down', zh: '社科院 → 管理學院', en: 'Social Sciences → Management', color: '#d9792b', skip: ['second-dorms'], via: {
     'basic-science>girls-dorm': [[-493.7, 9.9], [-451.7, -45.2]],
     'girls-dorm>green-heart': [[-208.6, 72.9], [-96.7, 72.2]],
   }},
-  {id: 2, key: 'up', zh: '管理學院 → 社科院', en: 'Management → Social Sciences', color: '#2f7fb8', via: {}},
+  {id: 2, key: 'up', zh: '管理學院 → 社科院', en: 'Management → Social Sciences', color: '#2f7fb8', skip: [], via: {}},
 ];
 const NAMES = [
   [/社科院/, 'social-sciences'], [/農法學院/, 'agriculture-law'], [/基礎科學館/, 'basic-science'],
@@ -143,7 +149,8 @@ const stopNodes = Object.fromEntries(Object.entries(STOPS).map(([id, stop]) => {
 const round = v => Math.round(v * 10) / 10;
 const routes = [];
 for (const route of ROUTES) {
-  const {departures, stops} = await timetable(route.id);
+  const timetabled = await timetable(route.id);
+  const departures = timetabled.departures, stops = timetabled.stops.filter(stop => !route.skip.includes(stop));
   const path = [];
   let length = 0;
   for (let i = 1; i < stops.length; i++) {
@@ -159,7 +166,7 @@ for (const route of ROUTES) {
       path.push(...leg.path.slice(path.length ? 1 : 0).map(id => vertices[id].map(round)));
     }
   }
-  const {via, ...details} = route;
+  const {via, skip, ...details} = route;
   routes.push({...details, days: 'weekdays', stops, departures, length: Math.round(length), path,
     source: `${base}/timetable/${route.id}/zh_TW`});
   console.log(`route ${route.id}: ${stops.length} stops, ${departures.length} departures ${departures[0]}–${departures.at(-1)}, ${Math.round(length)} m`);
