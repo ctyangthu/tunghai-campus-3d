@@ -6,6 +6,7 @@
     </div>
     <div class="thu-header-tools">
       <a class="btn thu-lang" href="{{otherHref}}" hreflang="{{otherLang}}" lang="{{otherLang}}" title="{{otherTitle}}">{{otherLabel}}</a>
+      <button class="btn thu-bus-toggle" type="button" data-action="bus" aria-pressed="false" aria-controls="thu-bus"><svg viewBox="0 0 16 16" width="15" height="15" aria-hidden="true"><rect x="2.5" y="1.5" width="11" height="10.5" rx="2" fill="none" stroke="currentColor" stroke-width="1.4"/><path d="M2.5 7.5h11M5 12v2.5M11 12v2.5" fill="none" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/><circle cx="5.2" cy="9.8" r=".9" fill="currentColor"/><circle cx="10.8" cy="9.8" r=".9" fill="currentColor"/></svg>{{busToggle}}</button>
       <div class="thu-view" role="group" aria-label="{{viewGroup}}">
         <button class="btn" type="button" data-view="orbit" aria-pressed="true">{{viewOrbit}}</button>
         <button class="btn" type="button" data-view="top" aria-pressed="false">{{viewTop}}</button>
@@ -31,6 +32,15 @@
       <p class="thu-error" role="alert" hidden>{{error}}</p>
     </div>
     <aside class="thu-sidebar" id="thu-sidebar">
+      <section class="thu-bus" id="thu-bus" aria-labelledby="thu-bus-title" hidden>
+        <h2 class="thu-panel-title" id="thu-bus-title">{{busTitle}}</h2>
+        <div class="thu-bus-routes" aria-live="polite"></div>
+        <div class="thu-detail-links">
+          <a class="thu-bus-live" href="http://60.248.165.113:61279/" target="_blank" rel="noopener noreferrer">{{busLive}}</a>
+          <a href="https://bus.service.thu.edu.tw/" target="_blank" rel="noopener noreferrer">{{busTimetable}}</a>
+        </div>
+        <p class="thu-bus-note">{{busNote}}</p>
+      </section>
       <h2 class="thu-panel-title">{{panelTitle}}</h2>
       <label class="thu-picker-label" for="thu-destination">{{picker}}</label>
       <select class="form-select" id="thu-destination"></select>

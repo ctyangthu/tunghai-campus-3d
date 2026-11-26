@@ -9,6 +9,7 @@
     "data:terrain": "node scripts/build-terrain.mjs",
     "data:extras": "node scripts/build-extras.mjs",
     "data:roofs": "python3 scripts/build-roof-colors.py",
+    "data:bus": "node scripts/build-bus.mjs",
     "chapel:export": "node scripts/chapel-gltf.mjs export",
     "chapel:import": "node scripts/chapel-gltf.mjs import"
   },
