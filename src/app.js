@@ -1,6 +1,7 @@
 import * as T from 'three';
 import {defaultPlaceId,places,zones} from './places.js';
-import {ui} from './i18n.js';
+import {english, ui} from './i18n.js';
+import {nextDeparture} from './campus-bus.js';
 import {makeWorld} from './scene.js';
 import {fineArtsId} from './fine-arts.js';
 import {provincialBuildingId} from './provincial-building.js';
@@ -116,7 +117,7 @@ async function openData() {
   return new Response(stream).json();
 }
 
-function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
+function init({geo:sourceGeo,terrain,chapel,extras,roofColors,bus}) {
   const geo=applyCampusRevisions(sourceGeo,extras);
   const renderer=new T.WebGLRenderer({antialias:true,alpha:true,powerPreference:'high-performance'});
   renderer.setPixelRatio(Math.min(devicePixelRatio||1, 1.8));
@@ -139,7 +140,7 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
   shadow.normalBias=2.5;
   shadow.bias=-.00028;
   scene.add(sun);
-  const {height,board,byId,hits,detailedGroups}=makeWorld(scene,geo,terrain,chapel,roofColors);
+  const {height,board,byId,hits,detailedGroups,busLayer}=makeWorld(scene,geo,terrain,chapel,roofColors,bus);
 
   const coordinates=new Map([...geo.buildings,...geo.land,...geo.pois].map(f=>[f.osm,f]));
   const [originLon,originLat]=geo.origin;
@@ -166,6 +167,69 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
     el('.thu-labels').append(button);
     return [{place,point,y,button}];
   });
+  // Campus shuttle: stop labels on the map and the departures panel.
+  let busOn=false;
+  const busStops=(busLayer?.stops??[]).map(stop=>{
+    const button=document.createElement('button');
+    button.type='button';
+    button.className='thu-marker thu-stop btn';
+    button.textContent=english?stop.stop.en:stop.stop.zh;
+    button.hidden=true;
+    button.addEventListener('click',()=>{
+      overview=false;
+      go({x:stop.x,y:stop.y-3.4,z:stop.z,size:150,...(view==='top'?bird:{az:state.az,el:Math.max(.55,state.el)})},800);
+    });
+    el('.thu-labels').append(button);
+    return {...stop,button};
+  });
+  const busPanel=el('.thu-bus');
+  const busToggle=el('.thu-bus-toggle');
+  if(!busLayer&&busToggle) busToggle.hidden=true;
+  function writeBus(){
+    if(!busLayer) return;
+    const routes=el('.thu-bus-routes');
+    routes.replaceChildren(...bus.routes.map(route=>{
+      const next=nextDeparture(route);
+      const card=document.createElement('div');
+      card.className='thu-bus-route';
+      card.style.setProperty('--route',route.color);
+      const title=document.createElement('h3');
+      title.textContent=english?route.en:route.zh;
+      const when=document.createElement('p');
+      when.className='thu-bus-next';
+      when.textContent=next.today?ui.busNext(next.time,next.wait,next.left):ui.busLater(ui.weekdays[next.day],next.time);
+      const stops=document.createElement('ol');
+      for(const id of route.stops){
+        const item=document.createElement('li');
+        item.textContent=english?bus.stops[id].en:bus.stops[id].zh;
+        stops.append(item);
+      }
+      const link=document.createElement('a');
+      link.href=route.source;
+      link.target='_blank';
+      link.rel='noopener noreferrer';
+      link.textContent=`${ui.busTimetable} ↗`;
+      card.append(title,when,stops,link);
+      return card;
+    }));
+  }
+  let busTimer=0;
+  function setBus(on){
+    if(!busLayer) return;
+    busOn=on;
+    busLayer.group.visible=on;
+    busPanel.hidden=!on;
+    busToggle.setAttribute('aria-pressed',String(on));
+    busToggle.classList.toggle('btn-primary',on);
+    clearInterval(busTimer);
+    if(on){
+      writeBus();
+      busTimer=setInterval(writeBus,30000);
+      root.classList.remove('thu-panel-collapsed');
+    }
+    renderer.shadowMap.needsUpdate=true;
+    requestDraw();
+  }
   const ring=new T.Mesh(new T.RingGeometry(1,1.13,48),new T.MeshBasicMaterial({color:'#eabb50',side:T.DoubleSide,depthTest:true,transparent:true,opacity:.9}));
   ring.rotation.x=-Math.PI/2;
   ring.renderOrder=20;
@@ -283,6 +347,21 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
         shown.push(rect);
       }
     }
+    for(const stop of busStops){
+      if(!busOn){ stop.button.hidden=true; continue; }
+      tmp.set(stop.x,stop.y,stop.z).project(camera);
+      const x=(tmp.x*.5+.5)*widthPx, yPx=(.5-tmp.y*.5)*heightPx;
+      const bw=stop.button.textContent.length*(english?6.4:12)+30;
+      const rect=[x-bw/2,yPx-29,x+bw/2,yPx+4];
+      const inMap=rect[0]>6&&rect[1]>11&&rect[2]<widthPx-7&&rect[3]<heightPx-27;
+      const occupied=shown.some(o=>rect[0]<o[2]+4&&rect[1]<o[3]+3&&rect[2]+4>o[0]&&rect[3]+3>o[1]);
+      stop.button.hidden=!(inMap&&!occupied);
+      if(!stop.button.hidden){
+        stop.button.style.left=x+'px';
+        stop.button.style.top=(yPx-4)+'px';
+        shown.push(rect);
+      }
+    }
     const point=coordinates.get(selected.id);
     ring.visible=focusActive&&Boolean(point)&&!detailedLandmarks.has(selected.id)&&selected.id!=='r5467507';
     if(ring.visible){
@@ -343,6 +422,7 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
     widthPx=map.clientWidth;
     heightPx=map.clientHeight;
     renderer.setSize(Math.max(1,widthPx),Math.max(1,heightPx),false);
+    busLayer?.setResolution(Math.max(1,widthPx),Math.max(1,heightPx));
     if(requestedPlace&&!focusedOnLoad){
       focusedOnLoad=true;
       const point=coordinates.get(requestedPlace.id);
@@ -393,6 +473,7 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
       case 'home': showOverview(); break;
       case 'focus': navigate(selected); break;
       case 'fullscreen': toggleFullscreen(); break;
+      case 'bus': setBus(!busOn); if(busOn) showOverview(); break;
       default: resetView(button.dataset.view);
     }
   });
@@ -461,6 +542,8 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors}) {
   });
 
   updateViewButtons();
+  // ?bus=1 opens with the campus shuttle shown.
+  if(query.get('bus')==='1') setBus(true);
   renderer.shadowMap.autoUpdate=false;
   renderer.shadowMap.needsUpdate=true;
   root.dataset.ready='true';

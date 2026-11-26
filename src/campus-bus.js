@@ -1,0 +1,86 @@
+import * as T from 'three';
+import {Line2} from 'three/examples/jsm/lines/Line2.js';
+import {LineGeometry} from 'three/examples/jsm/lines/LineGeometry.js';
+import {LineMaterial} from 'three/examples/jsm/lines/LineMaterial.js';
+
+// The campus shuttle (data/campus-bus.json, scripts/build-bus.mjs): route lines along
+// the roads, drawn a fixed number of pixels wide so they read at every zoom, and a sign
+// post at every stop. Where both directions share a road the second route is drawn
+// thinner on top of the first, so both colours show.
+export const busHome = 'https://bus.service.thu.edu.tw/';
+// The university's live bus positions. It is served over plain http, so a page on
+// https may link to it but cannot embed it or read from it.
+export const busLive = 'http://60.248.165.113:61279/';
+
+const lift = 1.2;
+
+// Splits a polyline into pieces about `step` metres long.
+function densify(points, step) {
+  const out = [points[0]];
+  for (let i = 1; i < points.length; i++) {
+    const [ax, az] = points[i - 1], [bx, bz] = points[i];
+    const n = Math.max(1, Math.ceil(Math.hypot(bx - ax, bz - az) / step));
+    for (let k = 1; k <= n; k++) out.push([ax + (bx - ax) * k / n, az + (bz - az) * k / n]);
+  }
+  return out;
+}
+
+export function addBusLayer(bus, surface) {
+  const group = new T.Group();
+  group.visible = false;
+  const materials = [];
+  bus.routes.forEach((route, index) => {
+    const path = densify(route.path, 3);
+    const geometry = new LineGeometry();
+    // The narrower route rides higher so the two never fight for the same depth.
+    geometry.setPositions(path.flatMap(([x, z]) => [x, surface(x, z) + lift + index * 1.8, z]));
+    // Route 1 wide underneath, route 2 narrower on top.
+    const material = new LineMaterial({color: route.color, linewidth: index ? 3.2 : 6.5, worldUnits: false});
+    materials.push(material);
+    const line = new Line2(geometry, material);
+    line.computeLineDistances();
+    line.renderOrder = 2 + index;
+    group.add(line);
+  });
+  const pole = new T.MeshLambertMaterial({color: '#e8e6dd'});
+  const sign = new T.MeshLambertMaterial({color: '#e0a92e'});
+  const poleGeometry = new T.CylinderGeometry(.09, .09, 3, 8);
+  const signGeometry = new T.BoxGeometry(.9, .9, .08);
+  const stops = Object.entries(bus.stops).map(([id, stop]) => {
+    const [x, z] = stop.at;
+    const ground = surface(x, z);
+    const post = new T.Mesh(poleGeometry, pole);
+    post.position.set(x, ground + 1.5, z);
+    const plate = new T.Mesh(signGeometry, sign);
+    plate.position.set(x, ground + 2.7, z);
+    group.add(post, plate);
+    return {id, stop, x, y: ground + 3.4, z};
+  });
+  // Line widths are in pixels, so the materials need the drawing size.
+  const setResolution = (width, height) => materials.forEach(material => material.resolution.set(width, height));
+  return {group, stops, setResolution};
+}
+
+// Departures are given in Taiwan time, Monday to Friday.
+function taipeiClock(date) {
+  const parts = Object.fromEntries(new Intl.DateTimeFormat('en-US', {
+    timeZone: 'Asia/Taipei', weekday: 'short', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+  }).formatToParts(date).map(part => [part.type, part.value]));
+  const day = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'].indexOf(parts.weekday);
+  return {day, minutes: Number(parts.hour) * 60 + Number(parts.minute)};
+}
+const minutesOf = time => Number(time.slice(0, 2)) * 60 + Number(time.slice(3, 5));
+
+// {time, wait (minutes), day (0–6), today: boolean, left: departures left today}.
+export function nextDeparture(route, date = new Date()) {
+  const {day, minutes} = taipeiClock(date);
+  const weekday = day >= 1 && day <= 5;
+  const times = route.departures.map(minutesOf);
+  const later = weekday ? times.filter(t => t >= minutes) : [];
+  if (later.length) {
+    return {time: route.departures[times.indexOf(later[0])], wait: later[0] - minutes, day, today: true, left: later.length};
+  }
+  let ahead = 1;
+  while (![1, 2, 3, 4, 5].includes((day + ahead) % 7)) ahead++;
+  return {time: route.departures[0], wait: ahead * 1440 + times[0] - minutes, day: (day + ahead) % 7, today: false, left: 0};
+}

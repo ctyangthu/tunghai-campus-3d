@@ -236,7 +236,10 @@ function mainGate(ground) {
     }
   });
   const plaza = [[tower.u - 4, tower.v - 4], [tower.u + 4, tower.v - 4], [tower.u + 4, tower.v + 4], [tower.u - 4, tower.v + 4]];
-  return {group, pickables, top: grade + 15.1, exclusions: [apron, plaza].map(ring => ring.map(([u, v]) => at(u, v)))};
+  // The gate is open ground with no trees: the tower plaza, the lanes and the paved
+  // forecourts on both sides up to the guard buildings.
+  const forecourt = [[-28, edge(-28) - 2], [22, edge(22) - 2], [22, 32], [6, 48], [-6, 48], [-28, 22]];
+  return {group, pickables, top: grade + 15.1, exclusions: [apron, plaza, forecourt].map(ring => ring.map(([u, v]) => at(u, v)))};
 }
 
 function secondGate(ground) {

@@ -12,6 +12,7 @@ import {addGates} from './gates.js';
 import {addCarbonPark, carbonParkId} from './carbon-park.js';
 import {addRoseGarden, roseGardenId} from './rose-garden.js';
 import {librarySite} from './library-model.js';
+import {addBusLayer} from './campus-bus.js';
 import {placeAliases} from './places.js';
 import {alumniBellId, alumniBellTower, courtyardWing, wenliBoulevardId, wenliCourtyards} from './wenli-heritage.js';
 import {northernLandmarks} from './northern-landmarks.js';
@@ -52,7 +53,7 @@ function inside(x, z, points) {
 
 // roofColors maps OSM ids to roof colours sampled from the 2024 orthophoto
 // (data/roof-colors.json, scripts/build-roof-colors.py).
-export function makeWorld(scene, geo, terrain, chapel, roofColors = {}) {
+export function makeWorld(scene, geo, terrain, chapel, roofColors = {}, bus = null) {
   const [bounds, nx, nz, raw] = terrain;
   const [west,north,east,south] = bounds;
   const width = east-west, depth = south-north;
@@ -337,7 +338,9 @@ export function makeWorld(scene, geo, terrain, chapel, roofColors = {}) {
   }
 
   plantTrees(scene,geo,height,bounds,plantingExclusions);
-  return {height,board,byId,hits,detailedGroups};
+  const busLayer = bus ? addBusLayer(bus, surface) : null;
+  if (busLayer) scene.add(busLayer.group);
+  return {height,board,byId,hits,detailedGroups,busLayer};
 }
 
 function groundTexture(geo,bounds,height) {
@@ -506,7 +509,8 @@ function plantTrees(scene,geo,height,bounds,plantingExclusions) {
     return false;
   }
   const [west,north,east,south]=bounds;
-  const candidates=[...geo.trees.map(p=>[...p,1])];
+  // Mapped trees obey the same exclusions (gate lanes and plazas, the rose garden, ...).
+  const candidates=geo.trees.filter(([x,z])=>!plantingExclusions.some(polygon=>inside(x,z,polygon))).map(p=>[...p,1]);
   const openLand=boxes(geo.land.filter(f=>['meadow','farmland','grass'].includes(f.type)));
   for(let row=0,z=north+8;z<south;z+=13,row++){
     for(let col=0,x=west+8;x<east;x+=13,col++){

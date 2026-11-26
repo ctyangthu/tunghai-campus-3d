@@ -16,7 +16,7 @@ if (missing.length || unknown.length) {
 const read = path => readFile(new URL(path, import.meta.url), 'utf8');
 const bundle = lang => build({entryPoints: ['src/app.js'], bundle: true, minify: true, write: false,
   legalComments: 'none', define: {__LANG__: JSON.stringify(lang)}});
-const [markup, style, common, license, geo, terrain, chapel, extras, roofColors, zhBundle, enBundle] = await Promise.all([
+const [markup, style, common, license, geo, terrain, chapel, extras, roofColors, bus, zhBundle, enBundle] = await Promise.all([
   read('src/shell.html'),
   read('src/style.css'),
   read('src/standalone.css'),
@@ -26,10 +26,11 @@ const [markup, style, common, license, geo, terrain, chapel, extras, roofColors,
   read('data/luce-chapel.json').then(JSON.parse),
   read('data/campus-extras.json').then(JSON.parse),
   read('data/roof-colors.json').then(JSON.parse),
+  read('data/campus-bus.json').then(JSON.parse),
   bundle('zh'),
   bundle('en'),
 ]);
-const data = gzipSync(JSON.stringify({geo,terrain,chapel,extras,roofColors}), {level: 9}).toString('base64');
+const data = gzipSync(JSON.stringify({geo,terrain,chapel,extras,roofColors,bus}), {level: 9}).toString('base64');
 const escape = text => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
 function page(lang, built) {
