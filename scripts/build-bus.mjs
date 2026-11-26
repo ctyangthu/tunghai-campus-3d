@@ -26,9 +26,15 @@ const STOPS = {
 };
 
 // The two weekday routes and how the timetable's stop names map onto STOPS.
+// `via` pins a leg to the roads the bus actually takes where the shortest path differs:
+// route 1 runs up 約農路 west of the chapel lawn to 德耀路, down 篤信路 past 女舍陽光草坪,
+// and stays on 篤信路 before turning north to 銘賢路 (as marked by the university).
 const ROUTES = [
-  {id: 1, key: 'down', zh: '社科院 → 管理學院', en: 'Social Sciences → Management', color: '#d9792b'},
-  {id: 2, key: 'up', zh: '管理學院 → 社科院', en: 'Management → Social Sciences', color: '#2f7fb8'},
+  {id: 1, key: 'down', zh: '社科院 → 管理學院', en: 'Social Sciences → Management', color: '#d9792b', via: {
+    'basic-science>girls-dorm': [[-493.7, 9.9], [-451.7, -45.2]],
+    'girls-dorm>green-heart': [[-208.6, 72.9], [-96.7, 72.2]],
+  }},
+  {id: 2, key: 'up', zh: '管理學院 → 社科院', en: 'Management → Social Sciences', color: '#2f7fb8', via: {}},
 ];
 const NAMES = [
   [/社科院/, 'social-sciences'], [/農法學院/, 'agriculture-law'], [/基礎科學館/, 'basic-science'],
@@ -141,11 +147,20 @@ for (const route of ROUTES) {
   const path = [];
   let length = 0;
   for (let i = 1; i < stops.length; i++) {
-    const leg = shortest(stopNodes[stops[i - 1]], stopNodes[stops[i]]);
-    length += leg.length;
-    path.push(...leg.path.slice(path.length ? 1 : 0).map(id => vertices[id].map(round)));
+    const via = (route.via[`${stops[i - 1]}>${stops[i]}`] ?? []).map(point => {
+      const {id, offset} = attach(point);
+      if (offset > 5) throw new Error(`route ${route.id}: waypoint ${point} is ${offset.toFixed(1)} m from a road`);
+      return id;
+    });
+    const nodes = [stopNodes[stops[i - 1]], ...via, stopNodes[stops[i]]];
+    for (let k = 1; k < nodes.length; k++) {
+      const leg = shortest(nodes[k - 1], nodes[k]);
+      length += leg.length;
+      path.push(...leg.path.slice(path.length ? 1 : 0).map(id => vertices[id].map(round)));
+    }
   }
-  routes.push({...route, days: 'weekdays', stops, departures, length: Math.round(length), path,
+  const {via, ...details} = route;
+  routes.push({...details, days: 'weekdays', stops, departures, length: Math.round(length), path,
     source: `${base}/timetable/${route.id}/zh_TW`});
   console.log(`route ${route.id}: ${stops.length} stops, ${departures.length} departures ${departures[0]}–${departures.at(-1)}, ${Math.round(length)} m`);
 }
