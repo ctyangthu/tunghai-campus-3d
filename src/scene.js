@@ -506,7 +506,8 @@ function plantTrees(scene,geo,height,bounds,plantingExclusions) {
     return false;
   }
   const [west,north,east,south]=bounds;
-  const candidates=[...geo.trees.map(p=>[...p,1])];
+  // Mapped trees obey the same exclusions (gate lanes and plazas, the rose garden, ...).
+  const candidates=geo.trees.filter(([x,z])=>!plantingExclusions.some(polygon=>inside(x,z,polygon))).map(p=>[...p,1]);
   const openLand=boxes(geo.land.filter(f=>['meadow','farmland','grass'].includes(f.type)));
   for(let row=0,z=north+8;z<south;z+=13,row++){
     for(let col=0,x=west+8;x<east;x+=13,col++){
