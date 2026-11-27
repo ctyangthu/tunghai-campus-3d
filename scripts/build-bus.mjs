@@ -21,7 +21,10 @@ const STOPS = {
   'agriculture-law': {zh: '農法學院（化材系）', en: 'Colleges of Agriculture & Law', at: [-766.1, 78.2]}, // 科技路 beside 化材系館
   'basic-science': {zh: '基礎科學館', en: 'Basic Science Building', at: [-605, 131.2]},        // 科技路 below 基礎科學館
   'girls-dorm': {zh: '女舍陽光草坪', en: 'Women’s Residences, Sunshine Lawn', at: [-298.2, 47.7]}, // OSM n3716494690
-  'green-heart': {zh: '綠之心（乳品小棧）', en: 'Green Heart (Dairy Shop)', at: [59.6, -55.8]},   // OSM n13132325690
+  'green-heart': {zh: '綠之心（乳品小棧）', en: 'Green Heart (Dairy Shop)', at: [59.6, -55.8]},   // OSM n13132325690, westbound
+  // The eastbound platform, on 東海南路 before it meets 力行路: route 1 arriving from
+  // 銘賢路 stops here and turns east without passing the stop and doubling back.
+  'green-heart-east': {zh: '綠之心（乳品小棧）', en: 'Green Heart (Dairy Shop)', at: [70.8, -44.6]}, // OSM n13132325691
   'farm-lake': {zh: '農牧場東海湖', en: 'Tunghai Farm & Lake', at: [465.1, -92]},               // OSM n3716507503
   // The next two follow the university's live bus map: the residences stop on the road
   // north of 73棟 (OSM n3716507505 is 40 m east), 管理學院 at the 力行路 junction east of
@@ -41,11 +44,12 @@ const STOPS = {
 // north at 農牧場東海湖 up 力行路 straight to 管理學院 (its 7th stop there), so it does not
 // call at the second-area residences on the southern road, which route 2 serves.
 const ROUTES = [
-  {id: 1, key: 'down', zh: '社科院 → 管理學院', en: 'Social Sciences → Management', color: '#d9792b', skip: ['second-dorms'], via: {
-    'basic-science>girls-dorm': [[-493.7, 9.9], [-451.7, -45.2]],
-    'girls-dorm>green-heart': [[-208.6, 72.9], [-96.7, 72.2]],
-  }},
-  {id: 2, key: 'up', zh: '管理學院 → 社科院', en: 'Management → Social Sciences', color: '#2f7fb8', skip: [], via: {}},
+  {id: 1, key: 'down', zh: '社科院 → 管理學院', en: 'Social Sciences → Management', color: '#d9792b', skip: ['second-dorms'],
+    platforms: {'green-heart': 'green-heart-east'}, via: {
+      'basic-science>girls-dorm': [[-493.7, 9.9], [-451.7, -45.2]],
+      'girls-dorm>green-heart-east': [[-208.6, 72.9], [-96.7, 72.2]],
+    }},
+  {id: 2, key: 'up', zh: '管理學院 → 社科院', en: 'Management → Social Sciences', color: '#2f7fb8', skip: [], platforms: {}, via: {}},
 ];
 const NAMES = [
   [/社科院/, 'social-sciences'], [/農法學院/, 'agriculture-law'], [/基礎科學館/, 'basic-science'],
@@ -102,19 +106,31 @@ for (const road of roads) {
   for (let i = 1; i < ids.length; i++) if (ids[i] !== ids[i - 1]) { link(ids[i - 1], ids[i]); segments.push([ids[i - 1], ids[i]]); }
 }
 // A point joins the graph at its nearest point on a road segment.
-function attach([x, z], skip = () => false) {
+function nearest([x, z], skip = () => false) {
   let best = null;
-  for (const [a, b] of segments) {
-    if (skip(a, b)) continue;
+  segments.forEach(([a, b], index) => {
+    if (skip(a, b)) return;
     const [ax, az] = vertices[a], [bx, bz] = vertices[b];
     const dx = bx - ax, dz = bz - az;
     const t = Math.max(0, Math.min(1, ((x - ax) * dx + (z - az) * dz) / (dx * dx + dz * dz || 1)));
     const px = ax + t * dx, pz = az + t * dz, d = Math.hypot(px - x, pz - z);
-    if (!best || d < best.d) best = {d, a, b, point: [px, pz]};
-  }
+    if (!best || d < best.d) best = {d, a, b, index, point: [px, pz]};
+  });
+  return best;
+}
+// Joins a point to the graph at its nearest point on a road, splitting that segment so
+// later points on the same segment join up with this one rather than skip past it.
+function attach(point, skip) {
+  const best = nearest(point, skip);
   const id = vertex(best.point);
-  if (id !== best.a) link(id, best.a);
-  if (id !== best.b) link(id, best.b);
+  if (id !== best.a && id !== best.b) {
+    const [a, b] = [best.a, best.b];
+    edges.set(a, edges.get(a).filter(([next]) => next !== b));
+    edges.set(b, edges.get(b).filter(([next]) => next !== a));
+    link(a, id);
+    link(id, b);
+    segments.splice(best.index, 1, [a, id], [id, b]);
+  }
   return {id, offset: best.d};
 }
 // Road ends that stop on another road (T junctions the simplified outlines no longer
@@ -122,8 +138,9 @@ function attach([x, z], skip = () => false) {
 const ends = new Set(roads.flatMap(road => [road.points[0], road.points.at(-1)]).map(vertex));
 for (const end of ends) {
   const own = new Set(edges.get(end).map(([next]) => next));
-  const near = attach(vertices[end], (a, b) => a === end || b === end || own.has(a) && own.has(b));
-  if (near.offset > 4) continue;
+  const skip = (a, b) => a === end || b === end || own.has(a) && own.has(b);
+  if (nearest(vertices[end], skip).d > 4) continue;
+  const near = attach(vertices[end], skip);
   if (near.id !== end) link(end, near.id);
 }
 function shortest(from, to) {
@@ -155,7 +172,9 @@ const round = v => Math.round(v * 10) / 10;
 const routes = [];
 for (const route of ROUTES) {
   const timetabled = await timetable(route.id);
-  const departures = timetabled.departures, stops = timetabled.stops.filter(stop => !route.skip.includes(stop));
+  // `platforms` picks the platform a route uses where a stop has one on each side.
+  const departures = timetabled.departures, stops = timetabled.stops.filter(stop => !route.skip.includes(stop))
+    .map(stop => route.platforms[stop] ?? stop);
   const path = [];
   let length = 0;
   for (let i = 1; i < stops.length; i++) {
@@ -171,7 +190,7 @@ for (const route of ROUTES) {
       path.push(...leg.path.slice(path.length ? 1 : 0).map(id => vertices[id].map(round)));
     }
   }
-  const {via, skip, ...details} = route;
+  const {via, skip, platforms, ...details} = route;
   routes.push({...details, days: 'weekdays', stops, departures, length: Math.round(length), path,
     source: `${base}/timetable/${route.id}/zh_TW`});
   console.log(`route ${route.id}: ${stops.length} stops, ${departures.length} departures ${departures[0]}–${departures.at(-1)}, ${Math.round(length)} m`);

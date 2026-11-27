@@ -59,7 +59,7 @@ export const englishDescriptions = {
   w227104642: 'Faces Oberlin Plaza. A dark grey-tiled pitched roof, a red-brick facade, horizontal clerestory windows and central lattice doors make up its front.',
   r5470567: 'Three-storey building housing the Student Association, the Extracurricular Activities Section and other student organisations.',
   w227124386: 'The on-campus guest house, south-east of the Sunshine Lawn.',
-  w227075021: 'Green Heart has the Tunghai Dairy Shop and an environmental education hall. Between the teaching area and the farm, it is a stop for campus walks and for tasting Tunghai dairy products.',
+  w227075014: 'The Tunghai Dairy Shop stands on the south-east corner of the Green Heart crossroads and sells milk, ice cream and other dairy products from the university farm. Between the teaching area and the farm, it is a stop on campus walks. The small brick building on the north-west corner is the shop’s former home, now used by Tunghai Xiaozhan.',
   w227075006: 'East of the faculty housing area, near the residences at No. 136 Tunghai Road.',
   w109505205: 'Lake next to the farm and the Second Teaching Area. A lakeside walk leads to the Little Prince Rose Garden.',
   w226831394: 'The Tunghai Forest branch of Pear Cafe, opened in May 2024 in the former Second Teaching Area dining hall (campus map no. 51). The interior uses a sky-tree motif in shades of green; it is near the Tunghai baseball field and the Second Teaching Area residence halls.',
