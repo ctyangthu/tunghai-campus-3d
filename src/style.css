@@ -37,6 +37,9 @@
 #tunghai-campus .thu-bus-note { margin-top: 8px; font-size: .7rem; line-height: 1.55; color: var(--thu-soft); }
 #tunghai-campus .thu-marker.thu-stop { background: #fff4d6; color: #5a3b05; border-color: #d9a43b; font-size: .68rem; min-height: 22px; padding: 2px 6px; z-index: 1; }
 #tunghai-campus .thu-marker.thu-stop::before { background: #e0a92e; border-radius: 2px; width: 7px; height: 7px; }
+#tunghai-campus .thu-marker.thu-stop.is-city { background: #f1eafa; color: #3f2468; border-color: #9a77c9; }
+#tunghai-campus .thu-marker.thu-stop.is-city::before { background: #7b4fb0; }
+#tunghai-campus .thu-bus-route ol li.is-onward { list-style: none; margin-left: -1.3em; font-style: italic; }
 #tunghai-campus .thu-marker.thu-vehicle { background: #23634e; color: #fff; border-color: #f5d174; font-weight: 600; z-index: 3; box-shadow: 0 2px 9px #12392c55; }
 #tunghai-campus .thu-marker.thu-vehicle::before { background: #f5d174; animation: thu-pulse 1.6s ease-in-out infinite; }
 #tunghai-campus .thu-marker.thu-vehicle.is-stale { background: #6f7a74; border-color: #c9d0ca; }

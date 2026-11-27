@@ -173,7 +173,7 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors,bus}) {
   const busStops=(busLayer?.stops??[]).map(stop=>{
     const button=document.createElement('button');
     button.type='button';
-    button.className='thu-marker thu-stop btn';
+    button.className='thu-marker thu-stop btn'+(stop.city?' is-city':'');
     button.textContent=english?stop.stop.en:stop.stop.zh;
     button.hidden=true;
     button.addEventListener('click',()=>{
@@ -291,6 +291,34 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors,bus}) {
       card.append(title,when,stops,link);
       return card;
     }));
+    // Taichung city buses: route, the stops on this map, and the city's live service.
+    for(const line of bus.city??[]){
+      const card=document.createElement('div');
+      card.className='thu-bus-route is-city';
+      card.style.setProperty('--route',line.color);
+      const title=document.createElement('h3');
+      title.textContent=english?line.en:line.zh;
+      const what=document.createElement('p');
+      what.className='thu-bus-next';
+      what.textContent=english?line.lineEn:line.lineZh;
+      const stops=document.createElement('ol');
+      for(const stop of line.directions[0].stops){
+        const item=document.createElement('li');
+        item.textContent=english?stop.en:stop.zh;
+        stops.append(item);
+      }
+      const onward=document.createElement('li');
+      onward.className='is-onward';
+      onward.textContent=ui.busOnward(english?'Shuinan Transfer Station':line.directions[0].to);
+      stops.append(onward);
+      const link=document.createElement('a');
+      link.href=line.source;
+      link.target='_blank';
+      link.rel='noopener noreferrer';
+      link.textContent=`${ui.busCityLive} ↗`;
+      card.append(title,what,stops,link);
+      routes.append(card);
+    }
   }
   let busTimer=0;
   function setBus(on){
@@ -426,6 +454,21 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors,bus}) {
         shown.push(rect);
       }
     }
+    for(const stop of busStops){
+      if(!busOn){ stop.button.hidden=true; continue; }
+      tmp.set(stop.x,stop.y,stop.z).project(camera);
+      const x=(tmp.x*.5+.5)*widthPx, yPx=(.5-tmp.y*.5)*heightPx;
+      const bw=stop.button.textContent.length*(english?6.4:12)+30;
+      const rect=[x-bw/2,yPx-29,x+bw/2,yPx+4];
+      const inMap=rect[0]>6&&rect[1]>11&&rect[2]<widthPx-7&&rect[3]<heightPx-27;
+      const occupied=shown.some(o=>rect[0]<o[2]+4&&rect[1]<o[3]+3&&rect[2]+4>o[0]&&rect[3]+3>o[1]);
+      stop.button.hidden=!(inMap&&!occupied);
+      if(!stop.button.hidden){
+        stop.button.style.left=x+'px';
+        stop.button.style.top=(yPx-4)+'px';
+        shown.push(rect);
+      }
+    }
     for(const marker of markOrder){
       const {place,point,button,y}=marker;
       const current=place===selected;
@@ -443,21 +486,6 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors,bus}) {
       if(visible){
         button.style.left=x+'px';
         button.style.top=(yPx-4)+'px';
-        shown.push(rect);
-      }
-    }
-    for(const stop of busStops){
-      if(!busOn){ stop.button.hidden=true; continue; }
-      tmp.set(stop.x,stop.y,stop.z).project(camera);
-      const x=(tmp.x*.5+.5)*widthPx, yPx=(.5-tmp.y*.5)*heightPx;
-      const bw=stop.button.textContent.length*(english?6.4:12)+30;
-      const rect=[x-bw/2,yPx-29,x+bw/2,yPx+4];
-      const inMap=rect[0]>6&&rect[1]>11&&rect[2]<widthPx-7&&rect[3]<heightPx-27;
-      const occupied=shown.some(o=>rect[0]<o[2]+4&&rect[1]<o[3]+3&&rect[2]+4>o[0]&&rect[3]+3>o[1]);
-      stop.button.hidden=!(inMap&&!occupied);
-      if(!stop.button.hidden){
-        stop.button.style.left=x+'px';
-        stop.button.style.top=(yPx-4)+'px';
         shown.push(rect);
       }
     }
