@@ -55,7 +55,9 @@ export function addBusLayer(bus, surface) {
   const sign = new T.MeshLambertMaterial({color: '#e0a92e'});
   const poleGeometry = new T.CylinderGeometry(.09, .09, 3, 8);
   const signGeometry = new T.BoxGeometry(.9, .9, .08);
-  const stops = Object.entries(bus.stops).map(([id, stop]) => {
+  // A stop with a platform on each side gets a sign at each, but one label.
+  const labelled = new Set();
+  const stops = Object.entries(bus.stops).flatMap(([id, stop]) => {
     const [x, z] = stop.at;
     const ground = surface(x, z);
     const post = new T.Mesh(poleGeometry, pole);
@@ -63,7 +65,9 @@ export function addBusLayer(bus, surface) {
     const plate = new T.Mesh(signGeometry, sign);
     plate.position.set(x, ground + 2.7, z);
     group.add(post, plate);
-    return {id, stop, x, y: ground + 3.4, z};
+    if (labelled.has(stop.zh)) return [];
+    labelled.add(stop.zh);
+    return [{id, stop, x, y: ground + 3.4, z}];
   });
   // Taichung city buses (354): both directions in purple above the shuttle routes,
   // with purple stop signs; one label per stop name (a stop has a platform each side).
