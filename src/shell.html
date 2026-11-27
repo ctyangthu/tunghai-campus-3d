@@ -34,6 +34,10 @@
     <aside class="thu-sidebar" id="thu-sidebar">
       <section class="thu-bus" id="thu-bus" aria-labelledby="thu-bus-title" hidden>
         <h2 class="thu-panel-title" id="thu-bus-title">{{busTitle}}</h2>
+        <div class="thu-live" aria-live="polite">
+          <p class="thu-live-status">{{liveLoading}}</p>
+          <ul class="thu-live-list"></ul>
+        </div>
         <div class="thu-bus-routes" aria-live="polite"></div>
         <div class="thu-detail-links">
           <a class="thu-bus-live" href="http://60.248.165.113:61279/" target="_blank" rel="noopener noreferrer">{{busLive}}</a>
