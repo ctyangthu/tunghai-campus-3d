@@ -51,7 +51,8 @@ export const chinesePlaces = [
   ['w367198554',0,28,'音樂系館','Dept. of Music Building','校園地圖 28 號「音樂、美術系館」的音樂系館，鄰近美術系館。',campusMap,0,150],
   ['w367198636',0,28,'美術系館','Dept. of Fine Arts Building','清水混凝土、紅磚牆與外露樓梯構成系館立面。朝向中庭的植生曲面沿著坡地展開，連接建築與草坪。附近另有美術工坊。','https://www.taichung.gov.tw/media/271345/5102811383171.pdf',0,108],
   ['w226831045',0,29,'省政研究大樓','Provincial Government Building','又稱省政大樓（PG），設有國際學院、推廣部與國際會議廳。紅磚翼棟以深色坡屋頂收邊，入口設有玻璃帷幕和雨棚。','https://thupr.thu.edu.tw/newsdetail.php?c=60&id=53371',1,76],
-  ['w368191414',0,30,'產學大樓','Industry-Academia Building','第二教學區的產學合作空間，設有人工智慧中心。',campusMap,0,90],
+  ['w368191414',0,30,'半導體大樓（產學大樓）','Semiconductor Building (Industry-Academia Building)','校園地圖 30 號的產學大樓，正整建為半導體大樓。英業達創辦人、大渡山學會理事長鄭清和於 2026 年捐贈新臺幣 1 億元，其中 6,500 萬元用於大樓改建、3,500 萬元購置設備，支持半導體學程發展與籌設中的半導體學院。','https://www.cna.com.tw/postwrite/chi/449180',0,90],
+  ['w227125252',0,null,'大渡山AI中心','Dadushan–Tunghai AI Center','大渡山—東海人工智慧中心，位於第二教學區產學大樓北側。由鄭清和擔任理事長的大渡山學會協助成立，雙方於 2019 年簽訂 AI 合作框架協議；中心作為產學連結平台，與企業合作進行 AI 應用研究。','https://maps.app.goo.gl/NV631BAyqWMEY7vP8',0,80,110],
 
   // 生活機能區 Campus Amenities Area
   ['yang-activity-center',1,31,'楊瑞祥綜合活動大樓','Jay Yang Multipurpose Stadium','位於第一教學區運動場南側，與西側舊體育館連通。地上三層、地下一層，規劃室內跑道與多功能球場，2026 年校慶舉行剪綵。','https://thupr.thu.edu.tw/newsdetail.php?c=60&id=53634',1,132],
