@@ -56,6 +56,36 @@ export function addBusLayer(bus, surface) {
     group.add(post, plate);
     return {id, stop, x, y: ground + 3.4, z};
   });
+  // Taichung city buses (354): both directions in purple above the shuttle routes,
+  // with purple stop signs; one label per stop name (a stop has a platform each side).
+  const cityStops = [];
+  const citySign = new T.MeshLambertMaterial({color: '#7b4fb0'});
+  for (const line of bus.city ?? []) {
+    const material = new LineMaterial({color: line.color, linewidth: 3.6, worldUnits: false});
+    materials.push(material);
+    for (const direction of line.directions) {
+      const path = densify(direction.path, 3);
+      const geometry = new LineGeometry();
+      geometry.setPositions(path.flatMap(([x, z]) => [x, surface(x, z) + lift + 3.6, z]));
+      const route = new Line2(geometry, material);
+      route.computeLineDistances();
+      route.renderOrder = 4;
+      group.add(route);
+      for (const stop of direction.stops) {
+        const [x, z] = stop.at;
+        const ground = surface(x, z);
+        const post = new T.Mesh(poleGeometry, pole);
+        post.position.set(x, ground + 1.5, z);
+        const plate = new T.Mesh(signGeometry, citySign);
+        plate.position.set(x, ground + 2.7, z);
+        group.add(post, plate);
+        if (cityStops.some(known => known.stop.zh === `${line.ref} ${stop.zh}`)) continue;
+        cityStops.push({id: `city-${stop.osm}`, city: true,
+          stop: {zh: `${line.ref} ${stop.zh}`, en: `${line.ref} ${stop.en}`}, x, y: ground + 3.4, z});
+      }
+    }
+  }
+  stops.push(...cityStops);
   // Line widths are in pixels, so the materials need the drawing size.
   const setResolution = (width, height) => materials.forEach(material => material.resolution.set(width, height));
   return {group, stops, setResolution};

@@ -5,8 +5,13 @@
 // building the stop is named after; each route follows the drivable campus roads
 // (docs/data/campus-geo.json) from stop to stop.
 //
+// It also takes Taichung city bus 354, which starts at 東海路思義教堂, from the
+// OpenStreetMap route relations in .cache/osm.json (npm run data:osm): the part of each
+// direction inside the 3D map and its stops there.
+//
 //   node scripts/build-bus.mjs            (set NODE_USE_ENV_PROXY=1 behind a proxy)
 import {readFile, writeFile} from 'node:fs/promises';
+import {cacheDir, origin, terrain} from './config.mjs';
 
 const base = 'https://bus.service.thu.edu.tw';
 
@@ -174,6 +179,49 @@ for (const route of ROUTES) {
 const used = new Set(routes.flatMap(route => route.stops));
 const stops = Object.fromEntries(Object.entries(STOPS).filter(([id]) => used.has(id))
   .map(([id, {zh, en}]) => [id, {zh, en, at: vertices[stopNodes[id]].map(round)}]));
+
+// Taichung city bus 354 from the OSM route relations (public_transport v2: stops as
+// platform members, then the ways in order).
+const CITY = [
+  {ref: '354', relations: [17992607, 17992606], color: '#7b4fb0',
+    zh: '臺中市公車 354', en: 'Taichung City Bus 354',
+    lineZh: '東海路思義教堂 ⇄ 水湳轉運中心（經逢甲大學）', lineEn: 'Luce Chapel (THU) ⇄ Shuinan Transfer Station, via Feng Chia University',
+    source: 'https://citybus.taichung.gov.tw/'},
+];
+const osm = JSON.parse(await readFile(new URL('osm.json', cacheDir), 'utf8'));
+const elements = new Map(osm.elements.map(element => [element.type + element.id, element]));
+const kx = 111320 * Math.cos(origin[1] * Math.PI / 180), kz = 110770;
+const local = node => [round((node.lon - origin[0]) * kx), round(-(node.lat - origin[1]) * kz)];
+const [west, north, east, south] = terrain.bounds;
+const onMap = ([x, z]) => x >= west && x <= east && z >= north && z <= south;
+const city = CITY.map(line => ({
+  ...line, relations: undefined,
+  directions: line.relations.map(id => {
+    const relation = elements.get('relation' + id);
+    if (!relation) throw new Error(`city bus ${line.ref}: relation ${id} missing from .cache/osm.json`);
+    // Join the ways end to end, turning each (and the first, once) to follow on.
+    let chain = [];
+    relation.members.filter(m => m.type === 'way' && !m.role).forEach((member, index) => {
+      let nodes = elements.get('way' + member.ref).nodes.map(n => elements.get('node' + n));
+      if (!index) { chain = nodes; return; }
+      if (index === 1 && nodes[0].id !== chain.at(-1).id && nodes.at(-1).id !== chain.at(-1).id) chain.reverse();
+      if (nodes.at(-1).id === chain.at(-1).id) nodes = nodes.reverse();
+      chain.push(...(nodes[0].id === chain.at(-1).id ? nodes.slice(1) : nodes));
+    });
+    // The stretch that lies on the 3D map (the route leaves it once, northward).
+    const points = chain.map(local);
+    const first = points.findIndex(onMap), after = points.findIndex((p, i) => i > first && !onMap(p));
+    const path = points.slice(first, after < 0 ? undefined : after);
+    const stops = relation.members.filter(m => m.role === 'platform').map(m => elements.get('node' + m.ref))
+      .filter(Boolean).map(node => ({osm: node.id, zh: node.tags.name, en: node.tags['name:en'] ?? node.tags.name, at: local(node)}))
+      .filter(stop => onMap(stop.at));
+    return {from: relation.tags.from, to: relation.tags.to, path, stops};
+  }),
+}));
+for (const line of city) {
+  console.log(`city bus ${line.ref}: ${line.directions.map(d => `${d.from}→${d.to} ${d.path.length} points, stops ${d.stops.map(s => s.zh).join('、')}`).join(' | ')}`);
+}
+
 await writeFile(new URL('../data/campus-bus.json', import.meta.url), JSON.stringify({
-  source: base, retrieved: new Date().toISOString().slice(0, 10), stops, routes,
+  source: base, retrieved: new Date().toISOString().slice(0, 10), stops, routes, city,
 }) + '\n');
