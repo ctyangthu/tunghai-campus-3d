@@ -5,8 +5,9 @@ import {LineMaterial} from 'three/examples/jsm/lines/LineMaterial.js';
 
 // The campus shuttle (data/campus-bus.json, scripts/build-bus.mjs): route lines along
 // the roads, drawn a fixed number of pixels wide so they read at every zoom, and a sign
-// post at every stop. Where both directions share a road the second route is drawn
-// thinner on top of the first, so both colours show.
+// post at every stop. Both shuttle routes are drawn the same width; each keeps to the
+// right-hand side of the road in its direction of travel, so where the two share a
+// road they run side by side.
 export const busHome = 'https://bus.service.thu.edu.tw/';
 // The university's live bus positions. It is served over plain http, so a page on
 // https may link to it but cannot embed it or read from it.
@@ -25,17 +26,25 @@ function densify(points, step) {
   return out;
 }
 
+// Moves a polyline `distance` metres to the right of its direction of travel.
+function keepRight(points, distance) {
+  return points.map(([x, z], i) => {
+    const [px, pz] = points[Math.max(0, i - 1)], [nx, nz] = points[Math.min(points.length - 1, i + 1)];
+    const dx = nx - px, dz = nz - pz, length = Math.hypot(dx, dz) || 1;
+    return [x - dz / length * distance, z + dx / length * distance];
+  });
+}
+
 export function addBusLayer(bus, surface) {
   const group = new T.Group();
   group.visible = false;
   const materials = [];
   bus.routes.forEach((route, index) => {
-    const path = densify(route.path, 3);
+    const path = keepRight(densify(route.path, 3), 2.2);
     const geometry = new LineGeometry();
-    // The narrower route rides higher so the two never fight for the same depth.
+    // Slightly different heights so the two never fight for the same depth.
     geometry.setPositions(path.flatMap(([x, z]) => [x, surface(x, z) + lift + index * 1.8, z]));
-    // Route 1 wide underneath, route 2 narrower on top.
-    const material = new LineMaterial({color: route.color, linewidth: index ? 3.2 : 6.5, worldUnits: false});
+    const material = new LineMaterial({color: route.color, linewidth: 3.2, worldUnits: false});
     materials.push(material);
     const line = new Line2(geometry, material);
     line.computeLineDistances();
