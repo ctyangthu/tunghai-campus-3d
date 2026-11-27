@@ -2,6 +2,7 @@ import * as T from 'three';
 import {defaultPlaceId,places,zones} from './places.js';
 import {english, ui} from './i18n.js';
 import {nextDeparture} from './campus-bus.js';
+import {createVehicleLayer, fixAge, startCampusBusFeed, taipeiTime} from './live-bus.js';
 import {makeWorld} from './scene.js';
 import {fineArtsId} from './fine-arts.js';
 import {provincialBuildingId} from './provincial-building.js';
@@ -185,6 +186,84 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors,bus}) {
   const busPanel=el('.thu-bus');
   const busToggle=el('.thu-bus-toggle');
   if(!busLayer&&busToggle) busToggle.hidden=true;
+  // Live shuttle positions: polled only while the bus layer is shown and the page visible.
+  const liveVehicles=busLayer?createVehicleLayer(scene,height,geo.origin,bus.routes.map(route=>route.path)):null;
+  const vehicleLabels=new Map();
+  let liveSnapshot=null, liveIssue=null, stopFeed=null;
+  function vehicleLabel(id){
+    if(!vehicleLabels.has(id)){
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='thu-marker thu-vehicle btn';
+      button.hidden=true;
+      button.addEventListener('click',()=>{
+        const vehicle=liveVehicles.vehicles.get(id);
+        if(!vehicle) return;
+        overview=false;
+        go({x:vehicle.x,y:height(vehicle.x,vehicle.z),z:vehicle.z,size:140,...(view==='top'?bird:{az:state.az,el:Math.max(.55,state.el)})},800);
+      });
+      el('.thu-labels').append(button);
+      vehicleLabels.set(id,button);
+    }
+    return vehicleLabels.get(id);
+  }
+  function writeLive(){
+    if(!liveVehicles) return;
+    const now=Date.now();
+    const status=el('.thu-live-status'), list=el('.thu-live-list');
+    const time=liveSnapshot&&Date.parse(liveSnapshot.fetchedAt)?taipeiTime(Date.parse(liveSnapshot.fetchedAt)):'';
+    if(liveIssue?.kind==='limit') status.textContent=ui.liveLimit(liveIssue.seconds);
+    else if(liveIssue) status.textContent=liveSnapshot?ui.liveKept(time):ui.liveFailed;
+    else if(liveSnapshot) status.textContent=liveVehicles.vehicles.size?ui.liveCount(liveVehicles.vehicles.size,time):ui.liveNone(time);
+    status.classList.toggle('is-issue',Boolean(liveIssue));
+    const items=[...liveVehicles.vehicles.values()].sort((a,b)=>(b.gpsTime??0)-(a.gpsTime??0)).map(vehicle=>{
+      const age=fixAge(vehicle.gpsTime,now);
+      const stale=!age||age.hours||age.minutes>=5;
+      const item=document.createElement('li');
+      item.className=stale?'is-stale':'';
+      const button=document.createElement('button');
+      button.type='button';
+      button.className='thu-live-vehicle';
+      button.textContent=`${ui.vehicle} ${vehicle.id}`;
+      button.addEventListener('click',()=>vehicleLabel(vehicle.id).click());
+      const when=document.createElement('span');
+      when.textContent=ui.fixAge(age)+(vehicle.gpsTime?(english?` (${taipeiTime(vehicle.gpsTime)})`:`（${taipeiTime(vehicle.gpsTime)}）`):'');
+      item.append(button,when);
+      const label=vehicleLabel(vehicle.id);
+      label.textContent=`${ui.vehicle} · ${ui.labelAge(age)}`;
+      label.classList.toggle('is-stale',stale);
+      return item;
+    });
+    list.replaceChildren(...items);
+    for(const [id,button] of vehicleLabels){
+      if(!liveVehicles.vehicles.has(id)){ button.remove(); vehicleLabels.delete(id); }
+    }
+  }
+  function startLive(){
+    if(!liveVehicles||stopFeed||document.hidden) return;
+    stopFeed=startCampusBusFeed({
+      onSnapshot(snapshot){
+        liveSnapshot=snapshot;
+        liveIssue=null;
+        liveVehicles.update(snapshot);
+        writeLive();
+        renderer.shadowMap.needsUpdate=true;
+        requestDraw();
+      },
+      onIssue(issue){
+        liveIssue=issue;
+        writeLive();
+      },
+    });
+  }
+  function stopLive(){
+    stopFeed?.();
+    stopFeed=null;
+  }
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden) stopLive();
+    else if(busOn) startLive();
+  });
   function writeBus(){
     if(!busLayer) return;
     const routes=el('.thu-bus-routes');
@@ -218,14 +297,19 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors,bus}) {
     if(!busLayer) return;
     busOn=on;
     busLayer.group.visible=on;
+    liveVehicles.group.visible=on;
     busPanel.hidden=!on;
     busToggle.setAttribute('aria-pressed',String(on));
     busToggle.classList.toggle('btn-primary',on);
     clearInterval(busTimer);
     if(on){
       writeBus();
-      busTimer=setInterval(writeBus,30000);
+      writeLive();
+      busTimer=setInterval(()=>{writeBus();writeLive();requestDraw();},30000);
       root.classList.remove('thu-panel-collapsed');
+      startLive();
+    } else {
+      stopLive();
     }
     renderer.shadowMap.needsUpdate=true;
     requestDraw();
@@ -327,6 +411,21 @@ function init({geo:sourceGeo,terrain,chapel,extras,roofColors,bus}) {
 
     const markOrder=[...markers].sort((a,b)=>Number(b.place===selected)-Number(a.place===selected)||b.place.featured-a.place.featured);
     const shown=[];
+    for(const [id,button] of vehicleLabels){
+      const vehicle=liveVehicles.vehicles.get(id);
+      if(!busOn||!vehicle){ button.hidden=true; continue; }
+      tmp.set(vehicle.x,height(vehicle.x,vehicle.z)+4,vehicle.z).project(camera);
+      const x=(tmp.x*.5+.5)*widthPx, yPx=(.5-tmp.y*.5)*heightPx;
+      const bw=button.textContent.length*(english?6.6:11)+30;
+      const rect=[x-bw/2,yPx-29,x+bw/2,yPx+4];
+      const inMap=rect[0]>6&&rect[1]>11&&rect[2]<widthPx-7&&rect[3]<heightPx-27;
+      button.hidden=!inMap;
+      if(inMap){
+        button.style.left=x+'px';
+        button.style.top=(yPx-4)+'px';
+        shown.push(rect);
+      }
+    }
     for(const marker of markOrder){
       const {place,point,button,y}=marker;
       const current=place===selected;
