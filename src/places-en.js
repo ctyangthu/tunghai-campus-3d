@@ -38,7 +38,8 @@ export const englishDescriptions = {
   w367198554: 'The music half of campus map no. 28, the Music and Fine Arts buildings, next to the Fine Arts building.',
   w367198636: 'Fair-faced concrete, red-brick walls and exposed stairs make up the facades. A planted curved surface facing the courtyard runs down the slope, linking the building with the lawn. The Fine Arts Workshop is nearby.',
   w226831045: 'Also known as the PG building, with the International College, the Division of Continuing Education and the International Conference Hall. Red-brick wings are capped by dark pitched roofs, and the entrance has a glass curtain wall and canopy.',
-  w368191414: 'Space for industry–academia collaboration in the Second Teaching Area, home of the Artificial Intelligence Center.',
+  w368191414: 'The Industry-Academia Building (campus map no. 30), being refitted as the Semiconductor Building. In 2026 Cheng Ching-ho, founder of Inventec and chairman of the Dadushan Society (大渡山學會), gave NT$100 million: NT$65 million for rebuilding the interior and NT$35 million for equipment, supporting the semiconductor programmes and the planned College of Semiconductors.',
+  w227125252: 'The Dadushan–Tunghai Artificial Intelligence Center, north of the Industry-Academia Building in the Second Teaching Area. It was set up with the support of the Dadushan Society, chaired by Cheng Ching-ho, which signed an AI cooperation agreement with the university in 2019; the center links the university with industry for applied AI research.',
 
   // Campus Life
   'yang-activity-center': 'South of the First Teaching Area sports ground, connected to the old gymnasium on its west side. Three storeys above ground and one below, planned with an indoor running track and multipurpose courts; its ribbon was cut at the 2026 anniversary.',
